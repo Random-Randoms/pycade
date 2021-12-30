@@ -73,11 +73,12 @@ class Flight(Scene):
         arcade.start_render()
         self.all_sprites.draw()
         self.player.draw()
+        self.bullets.draw()
         arcade.draw_text(str(1 / self.delta_time), 500, 500, (0, 0, 0))
         arcade.draw_text(str(self.player.hp), 500, 520, (0, 0, 0))
         arcade.draw_text(str(self.player.right_pressed), 500, 540, (0, 0, 0))
         arcade.draw_text(str(self.player.left_pressed), 500, 560, (0, 0, 0))
-        arcade.draw_text(str(self.player.reload_time_left), 500, 580, (0, 0, 0))
+        arcade.draw_text(str(self.player.main_weapon.reload_time_left()), 500, 580, (0, 0, 0))
         arcade.draw_text(str(self.player.energy), 500, 408, (0, 0, 0))
 
     def on_update(self, delta_time: float):
@@ -88,15 +89,20 @@ class Flight(Scene):
         self.acc_timer.update(delta_time)
         self.update_enemies_speed(delta_time)
         self.player.update(delta_time)
+        self.move_bullets(delta_time)
         self.delta_time = delta_time
 
     """ methods for in-game actions """
 
-    """ update functions """
+    """ update methods """
 
     def update_enemies_speed(self, delta_time):
         for enemy in self.enemies:
             enemy.update_speed(self.speed * delta_time)
+
+    def move_bullets(self, delta_time):
+        for bullet in self.bullets:
+            bullet.move(delta_time)
 
     """ spawn methods """
 
@@ -109,30 +115,13 @@ class Flight(Scene):
         self.enemies.append(new_enemy)
         del new_enemy
 
-    def shoot(self):
-        new_bullet = self.player.spawn_bullet()
-        new_bullet.center_x = self.player.player_sprite.center_x
-        new_bullet.center_y = self.player.player_sprite.center_y
-        self.all_sprites.append(new_bullet)
-        self.bullets.append(new_bullet)
-        del new_bullet
-
-    def super_shoot(self):
-        new_bullet = self.player.spawn_super_bullet()
-        new_bullet.center_x = self.player.player_sprite.center_x
-        new_bullet.center_y = self.player.player_sprite.center_y
-        self.all_sprites.append(new_bullet)
-        self.bullets.append(new_bullet)
-        del new_bullet
-
     """ collision check methods """
 
     def check_collision_bullet_enemy(self):
         for bullet in self.bullets:
             for enemy in self.enemies:
                 if arcade.check_for_collision(bullet, enemy):
-                    bullet.destroy()
-                    enemy.destroy()
+                    bullet.collide(enemy)
 
     def check_collision_enemy_player(self):
         for enemy in self.enemies:
@@ -193,34 +182,81 @@ class Enemy(arcade.Sprite):
 
 
 class Bullet(arcade.Sprite):
-    def __init__(self, fname, scale, speed):
-        super().__init__(fname, scale)
+    def __init__(self, fname, scale, speed, on_collision=0):
+        self.scale_ = scale
         self.fname = fname
-        self.scale = scale
         self.speed = speed
-        self.change_y = speed
-
-    def update(self):
-        super().update()
-        if self.center_x > 600:
-            self.remove_from_sprite_lists()
-            del self
+        self.on_collision = on_collision
+        self.collisions = 0
+        super().__init__(fname, scale)
 
     def copy(self):
-        new_bullet = Bullet(self.fname, self.scale, self.speed)
-        return new_bullet
+        return Bullet(self.fname, self.scale_, self.speed, self.on_collision)
+
+    def move(self, delta_time):
+        self.center_y += self.speed * delta_time
+
+    def collide(self, enemy):
+        if self.on_collision == 0:
+            self.destroy()
+            enemy.destroy()
+            print('bullet destroyed')
+        elif self.on_collision == 1:
+            enemy.destroy()
+            self.collisions += 1
 
     def destroy(self):
         self.remove_from_sprite_lists()
         del self
 
 
-class Player:
-    def __init__(self, player_sprite, bullet_sprite, super_bullet_sprite, max_hp, base_side_speed, gun_reload, energy_flow):
+class Weapon:
+    def __init__(self, bullet_sprite, reload_time, energy_cost):
+        # flight
+        self.flight = None
+
+        # ship
+        self.ship = None
+
         # sprites
-        self.super_bullet_sprite = super_bullet_sprite
-        self.player_sprite = player_sprite
         self.bullet_sprite = bullet_sprite
+
+        # shoot info
+        self.reload_time = reload_time
+        self.energy_cost = energy_cost
+
+        # time
+        self.time_since_last_shoot = 0
+
+    def set_flight(self, flight: Flight):
+        self.flight = flight
+
+    def set_ship(self, ship):
+        self.ship = ship
+
+    def update(self, delta_time):
+        self.time_since_last_shoot += delta_time
+
+    def reload_time_left(self):
+        if self.time_since_last_shoot >= self.reload_time:
+            return 0
+        else:
+            return self.reload_time - self.time_since_last_shoot
+
+    def shoot(self):
+        if self.reload_time_left() <= 0 and self.ship.energy >= self.energy_cost:
+            self.ship.energy -= self.energy_cost
+            self.time_since_last_shoot = 0
+            new_bullet = self.bullet_sprite.copy()
+            new_bullet.center_x = self.ship.player_sprite.center_x
+            new_bullet.center_y = self.ship.player_sprite.center_y
+            self.flight.bullets.append(new_bullet)
+
+
+class Player:
+    def __init__(self, player_sprite, main_weapon, super_weapon, max_hp, base_side_speed, energy_flow):
+        # sprites
+        self.player_sprite = player_sprite
         self.sprites = arcade.SpriteList()
         self.sprites.append(player_sprite)
 
@@ -238,41 +274,17 @@ class Player:
         self.flight = None
 
         # weapon
-        self.cur_time = 0
-        self.last_shoot_time = 0
-        self.reload_time_left = 0
-        self.gun_reload_time = gun_reload
-        self.gun_reloaded = True
-        self.reload_timer = Timer(self.gun_reload_time, self.reload_gun)
-        self.super_bullet_cost = 50
+        self.main_weapon = main_weapon
+        self.main_weapon.set_ship(self)
+        self.super_weapon = super_weapon
+        self.super_weapon.set_ship(self)
 
         # energy
         self.energy_flow = energy_flow
         self.energy = 0
 
-    def reload_gun(self):
-        self.gun_reloaded = True
-
-    def spawn_bullet(self):
-        return self.bullet_sprite.copy()
-
-    def spawn_super_bullet(self):
-        return self.super_bullet_sprite.copy()
-
     def damage(self, damage):
         self.hp -= damage
-
-    def shoot(self):
-        if self.gun_reloaded:
-            self.flight.shoot()
-            self.reload_timer.refresh()
-            self.gun_reloaded = False
-            self.last_shoot_time = self.cur_time
-
-    def super_shoot(self):
-        if self.energy >= self.super_bullet_cost:
-            self.energy -= self.super_bullet_cost
-            self.flight.super_shoot()
 
     def on_key_press(self, symbol: int, modifiers: int):
         if symbol == arcade.key.A:
@@ -282,10 +294,10 @@ class Player:
             self.right_pressed = True
 
         if symbol == arcade.key.SPACE:
-            self.shoot()
+            self.main_weapon.shoot()
 
         if symbol == arcade.key.W:
-            self.super_shoot()
+            self.super_weapon.shoot()
 
     def on_key_release(self, symbol: int, modifiers: int):
         if symbol == arcade.key.A:
@@ -306,14 +318,14 @@ class Player:
         self.sprites.draw()
 
     def update(self, delta_time):
+        self.main_weapon.update(delta_time)
         self.energy += delta_time * self.energy_flow
-        self.cur_time += delta_time
-        self.reload_time_left = self.gun_reload_time - (self.cur_time - self.last_shoot_time)
         self.move(delta_time)
-        self.reload_timer.update(delta_time)
 
     def set_flight(self, flight):
         self.flight = flight
+        self.main_weapon.set_flight(self.flight)
+        self.super_weapon.set_flight(self.flight)
 
     def spawn(self, x, y):
         self.player_sprite.center_x = x
@@ -324,7 +336,7 @@ class App(arcade.Window):
     def __init__(self, width, height, title):
         super().__init__(width, height, title)
         arcade.set_background_color(arcade.color.WHITE)
-        self.set_update_rate(1/60)
+        self.set_update_rate(1/40)
         self.set_vsync(True)
         self.scene = Flight(100, 5)
 
@@ -343,10 +355,11 @@ class App(arcade.Window):
 
 """global variables"""
 default_player_sprite = arcade.Sprite("sprites/ship.gif")
-default_bullet = Bullet("sprites/bullet.gif", 1.0, 25)
-default_super_bullet = Bullet("sprites/super_bullet.gif", 1.0, 15)
-default_player = Player(default_player_sprite, default_bullet, default_super_bullet, 100, 250, 1, 5)
-
+default_bullet = Bullet("sprites/bullet.gif", 1.0, 250, 0)
+default_gun = Weapon(default_bullet, 0.5, 0)
+default_super_bullet = Bullet("sprites/super_bullet.gif", 1.0, 200, 1)
+default_super_gun = Weapon(default_super_bullet, 0, 25)
+default_player = Player(default_player_sprite, default_gun, default_super_gun, 100, 250, 5)
 
 app = App(600, 600, 'Arcade')
 arcade.run()
