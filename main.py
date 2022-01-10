@@ -1,3 +1,4 @@
+import builtins
 import arcade
 import random
 import math
@@ -29,7 +30,7 @@ class NodeTimeLine(TimeLine):
     def start(self):
         self.root.set_scene(Flight(self.root.player, self.root.width, self.root.height,
                                    [TimeSpawner(default_enemy, 0.15),
-                                    TimeSpawner(default_enemy_2, 2.0)], 360, 1920 - 360, 200, 1, 1))
+                                    TimeSpawner(default_enemy_2, 2.0)], 360, 1920 - 360, 200, 1, 50))
 
     def update(self):
         player = self.root.player
@@ -117,6 +118,10 @@ class Flight(Scene):
         self.mid_gui = GUIBar('sprites/gui/mid_gui.png', 3, 4, 12)
         self.left_border = GUIMovable("sprites/gui/stab_border_left.png", 50, self.height)
         self.right_border = GUIMovable("sprites/gui/stab_border_right.png", 50, self.height)
+        self.facility_info = []
+        for facility in self.player.facilities:
+            self.facility_info.append(GUIFacilityInfo("sprites/gui/facility_info.png",
+                                                      'sprites/icons/generator_icon.png'))
 
         # spawn borders
         self.left_spawn = left_spawn_zone
@@ -176,6 +181,8 @@ class Flight(Scene):
         self.mid_gui.set_position(8 * 120, 1 * 120)
         self.left_border.set_position(4 * 120, 4.5 * 120)
         self.right_border.set_position(12 * 120, 4.5 * 120)
+        for i in range(len(self.player.facilities)):
+            self.facility_info[i].set_position(1.5 * 120, 7 * 120 - i * 120)
 
     def sprite_setup(self):
         self.player_setup()
@@ -195,6 +202,8 @@ class Flight(Scene):
         self.right_gui.draw()
         self.mid_gui.draw()
         self.progress_bar.draw()
+        for gui in self.facility_info:
+            gui.draw()
 
     """ overridden methods of Scene class """
 
@@ -264,6 +273,9 @@ class Flight(Scene):
         self.mid_gui.upd(self.player.shield_capacitor.cur_shield / self.player.shield_capacitor.max_shield.value())
         self.left_border.move(delta_time)
         self.right_border.move(delta_time)
+        for i in range(len(self.player.facilities)):
+            self.facility_info[i].set_content(self.player.facilities[i].info())
+            self.facility_info[i].update()
 
     def update_spawn_timers(self, delta_time):
         for spawner in self.enemy_spawners:
@@ -302,6 +314,9 @@ class Flight(Scene):
 class Station(Scene):
     def __init__(self, player, width, height, facilities):
         super(Station, self).__init__(player, width, height)
+        # sounds
+        self.menu_sound = arcade.load_sound('sounds/sfx_menu_move4.wav')
+
         # facilities
         self.facilities = facilities
 
@@ -315,8 +330,8 @@ class Station(Scene):
         self.gui_facility = []
         for i in range(len(self.facilities)):
             self.gui_facility.append(GUIText('sprites/gui/text_window_2.png',
-                                           str(i + 1) + ': ' + self.facilities[i].name, (0, 0, 0),
-                                           'fonts/editundo.ttf', 20))
+                                             str(i + 1) + ': ' + self.facilities[i].name, (0, 0, 0),
+                                             'fonts/editundo.ttf', 20))
         self.set_gui()
 
         # player
@@ -353,9 +368,10 @@ class Station(Scene):
         for i in range(len(self.facilities)):
             if symbol == buttons[i]:
                 self.state = 'to facility' + str(i)
-                print(self.state)
+                arcade.play_sound(self.menu_sound)
 
         if symbol == arcade.key.ESCAPE:
+            arcade.play_sound(self.menu_sound)
             self.state = 'ended'
 
     def on_update(self, delta_time: float):
@@ -374,12 +390,15 @@ class StationFacility(Scene):
         super(StationFacility, self).__init__(width, height, player)
         self.name = name
         self.level = level
+        self.menu_sound = arcade.load_sound('sounds/sfx_menu_move4.wav')
+        self.buy_sound = arcade.load_sound('sounds/sfx_sounds_powerup16.wav')
 
     def on_key_press(self, symbol: int, modifiers: int):
         super(StationFacility, self).on_key_press(symbol, modifiers)
 
         if symbol == arcade.key.ESCAPE:
             self.state = 'back'
+            arcade.play_sound(self.menu_sound)
 
 
 class UpgradeHangar(StationFacility):
@@ -387,13 +406,15 @@ class UpgradeHangar(StationFacility):
         super(UpgradeHangar, self).__init__(width, health, player, 'Upgrade hangar', level)
         self.upgradables = []
         self.set_upgradables()
+
         upgrades_number = clamp(self.level, len(self.upgradables), 0)
-        self.upgrades = random.choices(self.upgradables, k=upgrades_number)
-        self.gui_welcome = GUIText('sprites/gui/text_window.png', 'Welcome to lvl ' + str(self.level) +
-                                   ' Upgrade Hangar!', (0, 0, 0), 'fonts/editundo.ttf', 20)
+        self.upgrades = choose_random_subset(self.upgradables, upgrades_number)
+        self.gui_welcome = GUIText('sprites/gui/text_window.png', 'Welcome to \n lvl ' + str(self.level) +
+                                   ' Upgrade Hangar!', (36, 59, 97), 'fonts/editundo.ttf', 20)
         self.gui_options = []
         for i in range(len(self.upgrades)):
-            self.gui_options.append(GUIText('sprites/gui/text_window_2.png', ' ', (0, 0, 0), 'fonts/editundo.ttf', 20))
+            self.gui_options.append(
+                GUIText('sprites/gui/text_window_2.png', ' ', (36, 59, 97), 'fonts/editundo.ttf', 20))
         self.set_gui()
 
     def set_gui(self):
@@ -428,6 +449,7 @@ class UpgradeHangar(StationFacility):
             if symbol == buttons[i] and self.upgrades[i][1]:
                 self.upgrades[i][0].upgrade()
                 self.upgrades[i][1] = False
+                arcade.play_sound(self.buy_sound)
 
     def on_update(self, delta_time: float):
         self.update_gui()
@@ -441,7 +463,7 @@ class UpgradeHangar(StationFacility):
 class MaintenanceHangar(StationFacility):
     def __init__(self, player, width, height, level):
         super(MaintenanceHangar, self).__init__(player, width, height, 'Maintenance Hangar', level)
-        self.gui_welcome = GUIText('sprites/gui/text_window.png', 'Welcome to lvl ' + str(self.level) +
+        self.gui_welcome = GUIText('sprites/gui/text_window.png', 'Welcome to \nlvl ' + str(self.level) +
                                    ' Maintenance Hangar!', (0, 0, 0), 'fonts/editundo.ttf', 20)
         self.set_gui()
 
@@ -486,6 +508,40 @@ def cut(filename='', rows=1, columns=1, amount=1):
             if num >= amount:
                 break
     return textures
+
+
+def choose_random_subset(_set: builtins.list, size):
+    result = []
+    _set_copy = copy.copy(_set)
+    for i in range(size):
+        index = random.choice(range(len(_set_copy)))
+        result.append(_set_copy[index])
+        _set_copy.pop(index)
+    return result
+
+
+def clamp(value, _max, _min):
+    if value > _max:
+        return _max
+    elif value < _min:
+        return _min
+    else:
+        return value
+
+
+def status_color(positiveness):
+    if positiveness == 2:
+        return (0, 255, 0)
+    elif positiveness == 1:
+        return (63, 127, 63)
+    elif positiveness == 0:
+        return (127, 127, 0)
+    elif positiveness == -1:
+        return (127, 63, 63)
+    elif positiveness == -2:
+        return  (255, 0, 0)
+    else:
+        (255, 255, 255)
 
 
 class Timer:
@@ -594,6 +650,52 @@ class GUIText(arcade.Sprite):
         super(GUIText, self).draw()
         arcade.draw_text(self.text, self.center_x, self.center_y, self.text_color,
                          font_name=self.font, font_size=self.font_size, anchor_x='center', anchor_y='center')
+
+
+class GUIFacilityInfo(arcade.Sprite):
+    def __init__(self, filename, icon):
+        super(GUIFacilityInfo, self).__init__(filename)
+        self.icon_sprite = arcade.Sprite(icon, scale=0.5)
+        self.bar_1 = GUIBar('sprites/gui/facility_info/facility_info_bar_blue.png', 23, 1, 23)
+        self.bar_2 = GUIBar('sprites/gui/facility_info/facility_info_bar_blue.png', 23, 1, 23)
+        self.bar_3 = GUIBar('sprites/gui/facility_info/facility_info_bar_blue.png', 23, 1, 23)
+        self.top_text_content = 'a'
+        self.bottom_text_content = 'a'
+        self.bottom_color = (0, 0, 0)
+        self.rel_value_1 = 0
+        self.rel_value_2 = 0
+        self.rel_value_3 = 0
+
+    def set_content(self, info):
+        self.rel_value_1 = info[0]
+        self.rel_value_2 = info[1]
+        self.rel_value_3 = info[2]
+        self.top_text_content = info[3]
+        self.bottom_text_content = info[4]
+        self.bottom_color = info[5]
+
+    def set_position(self, x, y):
+        super(GUIFacilityInfo, self).set_position(x, y)
+        self.icon_sprite.set_position(x - 112, y)
+        self.bar_1.set_position(self.center_x + 28, self.center_y + 8)
+        self.bar_2.set_position(self.center_x + 28, self.center_y)
+        self.bar_3.set_position(self.center_x + 28, self.center_y - 8)
+
+    def update(self):
+        self.bar_1.upd(self.rel_value_1)
+        self.bar_2.upd(self.rel_value_2)
+        self.bar_3.upd(self.rel_value_3)
+
+    def draw(self):
+        super(GUIFacilityInfo, self).draw()
+        self.icon_sprite.draw()
+        self.bar_1.draw()
+        self.bar_2.draw()
+        self.bar_3.draw()
+        arcade.draw_text(self.top_text_content, self.center_x - 60, self.center_y + 28, (255, 255, 255),
+                         font_name='fonts/editundo.ttf')
+        arcade.draw_text(self.bottom_text_content, self.center_x - 60, self.center_y - 28, self.bottom_color,
+                         font_name='fonts/editundo.ttf')
 
 
 """ game objects"""
@@ -805,12 +907,16 @@ class Value:
         self._value = None
         self.name = name
         self._upgradable = False
+        self.facility = None
 
     def is_upgradable(self):
         return self._upgradable
 
     def value(self):
         return self._value
+
+    def set_facility(self, facility):
+        self.facility = facility
 
 
 class ConstantValue(Value):
@@ -842,7 +948,9 @@ class UpgradableValue(Value):
 
     def upgrade_info(self):
         if self._upgradable:
-            return 'Upgrade ' + self.name + ' from ' + str(self.value()) + ' to ' + str(self.next_value())
+            return 'Upgrade ' + self.name + ' of ' + str(self.facility.name) + ' \n ' + 'from ' + str(self.value()) +\
+                   ' to ' + str(self.next_value())
+
         else:
             return ''
 
@@ -851,10 +959,16 @@ class UpgradableValue(Value):
 
 
 class ShipFacility:
-    def __init__(self):
+    def __init__(self, name: str):
         self.upgradables = []
+        self.name = name
+        self.status = ' '
+        self.status_positiveness = 0
         self.flight = None
         self.ship = None
+
+    def info(self):
+        return [0, 0, 0, self.name, self.status, status_color(self.status_positiveness)]
 
     def on_key_press(self, symbol: int, modifiers: int):
         pass
@@ -883,10 +997,19 @@ class Bullet(GameObject):
         self.max_collisions = max_collisions
         super().__init__(fname, scale)
         self.type = 'bullet'
+        self.change_x = 0
+        self.change_y = self.speed
+
+    def add_speed(self, spd):
+        self.change_x += spd
+
+    def set_velocity(self):
+        self.change_x = -self.speed * math.sin(math.radians(self.angle))
+        self.change_y = self.speed * math.cos(math.radians(self.angle))
 
     def upd(self, delta_time):
-        self.center_x += -self.speed * math.sin(math.radians(self.angle)) * delta_time
-        self.center_y += self.speed * math.cos(math.radians(self.angle)) * delta_time
+        self.center_x += self.change_x * delta_time
+        self.center_y += self.change_y * math.cos(math.radians(self.angle)) * delta_time
 
     def collide(self, _object):
         if _object.type in ['asteroid', 'missile']:
@@ -909,18 +1032,20 @@ class Bullet(GameObject):
 
 
 class Weapon(ShipFacility):
-    def __init__(self, reload_time, energy_cost):
-        super(Weapon, self).__init__()
+    def __init__(self, name, reload_time, energy_cost):
+        super(Weapon, self).__init__(name)
         self.reload_time = reload_time
         self.energy_cost = energy_cost
         self.upgradables.append(self.reload_time)
         self.upgradables.append(self.energy_cost)
+        self.reload_time.set_facility(self)
+        self.energy_cost.set_facility(self)
 
 
 class ShootingWeapon(Weapon):
-    def __init__(self, bullet_sprite, reload_time, energy_cost, key, sound):
+    def __init__(self, name, bullet_sprite, reload_time, energy_cost, key, sound):
         # parent class init
-        super().__init__(reload_time, energy_cost)
+        super().__init__(name, reload_time, energy_cost)
 
         # keys
         self.key = key
@@ -933,6 +1058,18 @@ class ShootingWeapon(Weapon):
 
         # sounds
         self.shoot_sound = sound
+
+    def info(self):
+        if self.reload_time.value() > 0:
+            rel_1 = self.reload_time_left() / self.reload_time.value()
+        else:
+            rel_1 = 1
+        if self.energy_cost.value() > 0:
+            rel_2 = clamp(self.ship.energy() / self.energy_cost.value(), 1, 0)
+        else:
+            rel_2 = 1
+        rel_3 = 0
+        return [rel_1, rel_2, rel_3, self.name, self.status, status_color(self.status_positiveness)]
 
     def update(self, delta_time):
         self.time_since_last_shoot += delta_time
@@ -955,11 +1092,8 @@ class ShootingWeapon(Weapon):
             new_bullet = self.bullet_sprite.copy()
             new_bullet.center_x = self.ship.ship_sprite.center_x
             new_bullet.center_y = self.ship.ship_sprite.center_y
-            alpha = math.radians(self.ship.ship_sprite.angle)
-            spd = self.ship.current_speed
-            spd2 = new_bullet.speed
-            new_bullet.angle = -math.atan((math.sin(alpha) * spd2 + spd) / (math.cos(alpha) * spd2)) * 180 / math.pi
-            new_bullet.speed = math.sqrt((math.sin(alpha) * spd2 + spd) ** 2 + (math.cos(alpha) * spd2) ** 2)
+            new_bullet.angle = self.ship.ship_sprite.angle
+            new_bullet.add_speed(self.ship.current_speed)
             self.flight.add_object(new_bullet)
 
 
@@ -967,9 +1101,10 @@ class ShootingWeapon(Weapon):
 
 
 class ShieldCapacitor(ShipFacility):
-    def __init__(self, max_shield):
-        super(ShieldCapacitor, self).__init__()
+    def __init__(self, name, max_shield):
+        super(ShieldCapacitor, self).__init__(name)
         self.max_shield = max_shield
+        self.max_shield.set_facility(self)
         self.cur_shield = 0
 
     def charge(self, shield):
@@ -989,19 +1124,23 @@ class ShieldCapacitor(ShipFacility):
 
 
 class Generator(ShipFacility):
-    def __init__(self, energy_prod):
-        super(Generator, self).__init__()
+    def __init__(self, name, energy_prod):
+        super(Generator, self).__init__(name)
         self.energy_prod = energy_prod
+        self.energy_prod.set_facility(self)
         self.upgradables = [self.energy_prod]
+        self.status = 'functioning'
+        self.status_positiveness = 2
 
     def update(self, delta_time):
         self.ship.give_energy(self.energy_prod.value() * delta_time)
 
 
 class EnergyStorage(ShipFacility):
-    def __init__(self, max_energy):
-        super().__init__()
+    def __init__(self, name, max_energy):
+        super().__init__(name)
         self.max_energy = max_energy
+        self.max_energy.set_facility(self)
         self.upgradables = [self.max_energy]
         self.energy = 0
 
@@ -1011,18 +1150,9 @@ class EnergyStorage(ShipFacility):
             self.energy = self.max_energy.value()
 
 
-def clamp(value, _max, _min):
-    if value > _max:
-        return _max
-    elif value < _min:
-        return _min
-    else:
-        return value
-
-
 class SpaceFoldStabilizer(ShipFacility):
     def __init__(self, left_border, right_border, coef, length, max_speed):
-        super().__init__()
+        super().__init__(' ')
         self.left_sprite = None
         self.right_sprite = None
         self.length = length
@@ -1072,7 +1202,7 @@ class SpaceFoldStabilizer(ShipFacility):
 
 class SideEngines(ShipFacility):
     def __init__(self, force):
-        super(SideEngines, self).__init__()
+        super(SideEngines, self).__init__(' ')
         self.left_pressed = False
         self.right_pressed = False
         self.force = force
@@ -1261,17 +1391,18 @@ default_enemy_2 = Missile('sprites/missile/missile_1.png', 1.0, 750, 5, default_
                            'sprites/missile/missile_2.png'])
 default_player_sprite = arcade.Sprite("sprites/ship.png")
 default_player_sprite.set_points(((4, 60), (20, 36), (20, -52), (-20, -52), (-20, 36), (-4, 60)))
-default_bullet = Bullet("sprites/bullet.png", 1.0, 250, 1, 0)
-default_gun = ShootingWeapon(default_bullet, UpgradableValue([2, 0.5], 'reload'), ConstantValue(0), arcade.key.SPACE,
-                             arcade.load_sound('sounds/sfx_wpn_cannon4.wav'))
-default_super_bullet = Bullet("sprites/super_bullet.png", 1.0, 200, -1, 0)
-default_super_gun = ShootingWeapon(default_super_bullet, ConstantValue(0), ConstantValue(25), arcade.key.W,
-                                   arcade.load_sound('sounds/sfx_wpn_laser2.wav'))
-default_generator = Generator(UpgradableValue([5, 10], 'energy prod'))
-default_energy_storage = EnergyStorage(UpgradableValue([100, 250], 'energy capacity'))
+default_bullet = Bullet("sprites/bullet.png", 1.0, 750, 1, 0)
+default_gun = ShootingWeapon('Main cannon', default_bullet, UpgradableValue([1, 0.75, 0.5], 'reload'), ConstantValue(0),
+                             arcade.key.SPACE, arcade.load_sound('sounds/sfx_wpn_cannon4.wav'))
+default_super_bullet = Bullet("sprites/super_bullet.png", 1.0, 500, -1, 0)
+default_super_gun = ShootingWeapon('Plasma gun', default_super_bullet, ConstantValue(0),
+                                   UpgradableValue([25, 20, 15], 'shoot energy'),
+                                   arcade.key.W, arcade.load_sound('sounds/sfx_wpn_laser2.wav'))
+default_generator = Generator('Nuclear reactor', UpgradableValue([5, 10], 'production'))
+default_energy_storage = EnergyStorage('Energy batteries', UpgradableValue([100, 250], 'capacity'))
 default_stabilizer = SpaceFoldStabilizer(360, 1920 - 360, 1500, 300, 750)
 default_side_engines = SideEngines(250)
-default_shield_capacitor = ShieldCapacitor(ConstantValue(50))
+default_shield_capacitor = ShieldCapacitor('Shield capacitor', UpgradableValue([50, 75, 100, 150], 'shield capacity'))
 default_shield_capacitor.charge(50)
 default_player = Ship(default_player_sprite, default_gun, default_energy_storage, default_shield_capacitor,
                       [default_generator,
