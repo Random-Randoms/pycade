@@ -5,6 +5,32 @@ import math
 import copy
 import PIL.Image
 
+
+class MenuController:
+    def __init__(self, timeline):
+        self.root = None
+        self.base_scene = None
+        self.timeline = timeline
+        self.in_game = False
+
+    def set_root(self, root):
+        self.root = root
+        self.base_scene = MainMenu(self.root.width, self.root.height)
+        self.timeline.set_root(root)
+
+    def start(self):
+        self.root.set_scene(self.base_scene)
+
+    def update(self):
+        if self.in_game:
+            self.timeline.update()
+        else:
+            state = self.root.scene.state
+            if state == 'start game':
+                self.in_game = True
+                self.timeline.start()
+
+
 """ timelines """
 
 
@@ -30,7 +56,7 @@ class NodeTimeLine(TimeLine):
     def start(self):
         self.root.set_scene(Flight(self.root.player, self.root.width, self.root.height,
                                    [TimeSpawner(default_enemy, 0.15),
-                                    TimeSpawner(default_enemy_2, 2.0)], 360, 1920 - 360, 200, 1, 50))
+                                    TimeSpawner(default_enemy_2, 3.0)], 360, 1920 - 360, 200, 1, 250))
 
     def update(self):
         player = self.root.player
@@ -45,8 +71,9 @@ class NodeTimeLine(TimeLine):
             self.root.set_scene(Loss(player, width, height))
 
         elif state == 'ended':
-            self.root.set_scene(Flight(player, width, height, [TimeSpawner(default_enemy, 0.25)], 360, 1920 - 360, 360,
-                                       5, 500))
+            self.root.set_scene(Flight(self.root.player, self.root.width, self.root.height,
+                                   [TimeSpawner(default_enemy, 0.15),
+                                    TimeSpawner(default_enemy_2, 2.0)], 360, 1920 - 360, 200, 1, 200))
 
         elif state == 'back':
             self.root.set_scene(self.cur_station)
@@ -62,12 +89,11 @@ class NodeTimeLine(TimeLine):
 
 
 class Scene:
-    def __init__(self, player, width, height):
-        self.state = ''
-        self.player = player
+    def __init__(self, width, height):
         self.width = width
         self.height = height
         self.delta_time = 1
+        self.state = ''
 
     def clear_state(self):
         self.state = ''
@@ -75,7 +101,6 @@ class Scene:
     def draw_fps(self):
         arcade.draw_text('FPS: ' + str(round(1 / self.delta_time)), 20, self.height - 30, (0, 0, 0), font_size=20,
                          font_name='fonts/editundo.ttf')
-
     def on_draw(self):
         pass
 
@@ -85,15 +110,61 @@ class Scene:
     def on_key_press(self, symbol: int, modifiers: int):
         if symbol == arcade.key.Q:
             app.close()
+
+    def on_key_release(self, symbol: int, modifiers: int):
+        pass
+
+
+class GameScene(Scene):
+    def __init__(self, player, width, height):
+        super(GameScene, self).__init__(width, height)
+        self.player = player
+
+    def on_key_press(self, symbol: int, modifiers: int):
+        super(GameScene, self).on_key_press(symbol, modifiers)
         self.player.on_key_press(symbol, modifiers)
 
     def on_key_release(self, symbol: int, modifiers: int):
         self.player.on_key_release(symbol, modifiers)
 
 
-class Loss(Scene):
+
+""" Menu scenes """
+
+
+class MainMenu(Scene):
+    def __init__(self, width, height):
+        super(MainMenu, self).__init__(width, height)
+        self.logo = GUIIdle('sprites/Logo.png')
+        self.menu_sound = arcade.load_sound('sounds/sfx_menu_move4.wav')
+        self.start_game = GUIText('sprites/gui/text_window_dark.png', 'Enter: new game', (23, 17, 26),
+                                  'fonts/editundo.ttf', 50)
+        self.set_gui()
+
+    def set_gui(self):
+        self.logo.set_position(8 * 120, 7 * 120)
+        self.start_game.set_position(8 * 120, 4.5 * 120)
+
+    def draw_gui(self):
+        self.logo.draw()
+        self.start_game.draw()
+
+    def on_key_press(self, symbol: int, modifiers: int):
+        super(MainMenu, self).on_key_press(symbol, modifiers)
+        if symbol == arcade.key.ENTER:
+            arcade.play_sound(self.menu_sound)
+            self.state = 'start game'
+
+    def on_draw(self):
+        self.draw_gui()
+
+
+class Loss(GameScene):
     def __init__(self, width, health, player):
         super(Loss, self).__init__(width, health, player)
+        for facility in self.player.facilities:
+            facility.status = 'malfunctioning'
+            facility.status_positiveness = -2
 
     def on_draw(self):
         arcade.start_render()
@@ -104,7 +175,7 @@ class Loss(Scene):
 """ flight """
 
 
-class Flight(Scene):
+class Flight(GameScene):
     def __init__(self, player, width, height, enemy_spawners, left_spawn_zone, right_spawn_zone, base_speed,
                  acceleration, length):
         super().__init__(player, width, height)
@@ -118,10 +189,14 @@ class Flight(Scene):
         self.mid_gui = GUIBar('sprites/gui/mid_gui.png', 3, 4, 12)
         self.left_border = GUIMovable("sprites/gui/stab_border_left.png", 50, self.height)
         self.right_border = GUIMovable("sprites/gui/stab_border_right.png", 50, self.height)
-        self.facility_info = []
+        self.showable_facilities = []
         for facility in self.player.facilities:
+            if facility.is_showable():
+                self.showable_facilities.append(facility)
+        self.facility_info = []
+        for facility in self.showable_facilities:
             self.facility_info.append(GUIFacilityInfo("sprites/gui/facility_info.png",
-                                                      'sprites/icons/generator_icon.png'))
+                                                      facility.icon))
 
         # spawn borders
         self.left_spawn = left_spawn_zone
@@ -181,7 +256,7 @@ class Flight(Scene):
         self.mid_gui.set_position(8 * 120, 1 * 120)
         self.left_border.set_position(4 * 120, 4.5 * 120)
         self.right_border.set_position(12 * 120, 4.5 * 120)
-        for i in range(len(self.player.facilities)):
+        for i in range(len(self.showable_facilities)):
             self.facility_info[i].set_position(1.5 * 120, 7 * 120 - i * 120)
 
     def sprite_setup(self):
@@ -204,14 +279,16 @@ class Flight(Scene):
         self.progress_bar.draw()
         for gui in self.facility_info:
             gui.draw()
+        arcade.draw_text('credits: ' + str(self.player.credits), 13.5 * 120, 8.5 * 120, (0, 0, 0), font_size=20,
+                         font_name='fonts/editundo.ttf')
+        arcade.draw_text('scraps: ' + str(self.player.scraps), 13.5 * 120, 8 * 120, (0, 0, 0), font_size=20,
+                         font_name='fonts/editundo.ttf')
 
     """ overridden methods of Scene class """
 
     def on_draw(self):
         arcade.start_render()
-        self.enemies.draw()
-        self.bullets.draw()
-        self.missiles.draw()
+        self.objects.draw()
         self.explosions.draw()
 
         self.player.draw()
@@ -266,6 +343,8 @@ class Flight(Scene):
         if _object.move_by_flight:
             self.move.append(_object)
 
+        _object.set_flight(self)
+
     def gui_update(self, delta_time):
         self.health_bar.upd(self.player.hp / self.player.max_hp)
         self.energy_bar.upd(self.player.energy_storage.energy / self.player.energy_storage.max_energy.value())
@@ -273,8 +352,8 @@ class Flight(Scene):
         self.mid_gui.upd(self.player.shield_capacitor.cur_shield / self.player.shield_capacitor.max_shield.value())
         self.left_border.move(delta_time)
         self.right_border.move(delta_time)
-        for i in range(len(self.player.facilities)):
-            self.facility_info[i].set_content(self.player.facilities[i].info())
+        for i in range(len(self.showable_facilities)):
+            self.facility_info[i].set_content(self.showable_facilities[i].info())
             self.facility_info[i].update()
 
     def update_spawn_timers(self, delta_time):
@@ -311,7 +390,7 @@ class Flight(Scene):
 """ station """
 
 
-class Station(Scene):
+class Station(GameScene):
     def __init__(self, player, width, height, facilities):
         super(Station, self).__init__(player, width, height)
         # sounds
@@ -385,20 +464,48 @@ class Station(Scene):
         self.draw_fps()
 
 
-class StationFacility(Scene):
+class StationFacility(GameScene):
     def __init__(self, width, height, player, name, level):
         super(StationFacility, self).__init__(width, height, player)
         self.name = name
         self.level = level
         self.menu_sound = arcade.load_sound('sounds/sfx_menu_move4.wav')
         self.buy_sound = arcade.load_sound('sounds/sfx_sounds_powerup16.wav')
-
+        self.gui_left_1 = GUIBar('sprites/gui/station_gui/left_1/st_gui_left_1.png', 6, 3, 18)
+        self.gui_left_2 = GUIBar('sprites/gui/station_gui/left_2/st_gui_left_2.png', 6, 3, 18)
+        self.gui_left_3 = GUIBar('sprites/gui/station_gui/left_3/st_gui_left_3.png', 6, 3, 18)
+        self.gui_left_4 = GUIIdle('sprites/gui/station_gui/st_gui_left_4.png')
+    
+    def set_gui(self):
+        self.gui_left_1.set_position(2 * 120, 7.5 * 120)
+        self.gui_left_2.set_position(2 * 120, 6.5 * 120)
+        self.gui_left_3.set_position(2 * 120, 5.5 * 120)
+        self.gui_left_4.set_position(2 * 120, 3 * 120)
+    
+    def draw_gui(self):
+        self.gui_left_1.draw()
+        self.gui_left_2.draw()
+        self.gui_left_3.draw()
+        self.gui_left_4.draw()
+    
+    def update_gui(self):
+        self.gui_left_1.upd(self.player.hp / self.player.max_hp)
+        self.gui_left_2.upd(self.player.energy() / self.player.max_energy())
+        self.gui_left_3.upd(self.player.shield_capacitor.cur_shield / self.player.shield_capacitor.max_shield.value())
+    
     def on_key_press(self, symbol: int, modifiers: int):
         super(StationFacility, self).on_key_press(symbol, modifiers)
 
         if symbol == arcade.key.ESCAPE:
             self.state = 'back'
             arcade.play_sound(self.menu_sound)
+    
+    def on_draw(self):
+        self.draw_gui()
+        
+    def on_update(self, delta_time: float):
+        super(StationFacility, self).on_update(delta_time)
+        self.update_gui()
 
 
 class UpgradeHangar(StationFacility):
@@ -406,7 +513,6 @@ class UpgradeHangar(StationFacility):
         super(UpgradeHangar, self).__init__(width, health, player, 'Upgrade hangar', level)
         self.upgradables = []
         self.set_upgradables()
-
         upgrades_number = clamp(self.level, len(self.upgradables), 0)
         self.upgrades = choose_random_subset(self.upgradables, upgrades_number)
         self.gui_welcome = GUIText('sprites/gui/text_window.png', 'Welcome to \n lvl ' + str(self.level) +
@@ -418,16 +524,19 @@ class UpgradeHangar(StationFacility):
         self.set_gui()
 
     def set_gui(self):
+        super(UpgradeHangar, self).set_gui()
         self.gui_welcome.set_position(7.5 * 120, 7 * 120)
         for i in range(len(self.upgrades)):
             self.gui_options[i].set_position(8 * 120, 6 * 120 - 90 * i)
 
     def draw_gui(self):
+        super(UpgradeHangar, self).draw_gui()
         self.gui_welcome.draw()
         for gui in self.gui_options:
             gui.draw()
 
     def update_gui(self):
+        super(UpgradeHangar, self).update_gui()
         self.gui_welcome.update()
         for i in range(len(self.gui_options)):
             if self.upgrades[i][1]:
@@ -452,10 +561,12 @@ class UpgradeHangar(StationFacility):
                 arcade.play_sound(self.buy_sound)
 
     def on_update(self, delta_time: float):
+        super(UpgradeHangar, self).on_update(delta_time)
         self.update_gui()
 
     def on_draw(self):
         arcade.start_render()
+        super(UpgradeHangar, self).on_draw()
         self.draw_fps()
         self.draw_gui()
 
@@ -465,13 +576,41 @@ class MaintenanceHangar(StationFacility):
         super(MaintenanceHangar, self).__init__(player, width, height, 'Maintenance Hangar', level)
         self.gui_welcome = GUIText('sprites/gui/text_window.png', 'Welcome to \nlvl ' + str(self.level) +
                                    ' Maintenance Hangar!', (0, 0, 0), 'fonts/editundo.ttf', 20)
+        self.gui_hp = GUIText('sprites/gui/text_window_2.png', '1: Repair hull', (36, 59, 97), 'fonts/editundo.ttf', 20)
+        self.gui_energy = GUIText('sprites/gui/text_window_2.png', '2: Restore energy', (36, 59, 97),
+                                  'fonts/editundo.ttf', 20)
+        self.gui_shields = GUIText('sprites/gui/text_window_2.png', '3: Recharge shields', (36, 59, 97),
+                                   'fonts/editundo.ttf', 20)
         self.set_gui()
 
     def draw_gui(self):
+        super(MaintenanceHangar, self).draw_gui()
         self.gui_welcome.draw()
+        self.gui_hp.draw()
+        self.gui_energy.draw()
+        self.gui_shields.draw()
+
+    def on_update(self, delta_time: float):
+        super(MaintenanceHangar, self).on_update(delta_time)
 
     def set_gui(self):
+        super(MaintenanceHangar, self).set_gui()
         self.gui_welcome.set_position(7.5 * 120, 7 * 120)
+        self.gui_hp.set_position(8 * 120, 6 * 120)
+        self.gui_energy.set_position(8 * 120, 5.25 * 120)
+        self.gui_shields.set_position(8 * 120, 4.5 * 120)
+
+    def on_key_press(self, symbol: int, modifiers: int):
+        super(MaintenanceHangar, self).on_key_press(symbol, modifiers)
+        if symbol == arcade.key.KEY_1:
+            self.player.repair()
+            arcade.play_sound(self.buy_sound)
+        if symbol == arcade.key.KEY_2:
+            self.player.recharge()
+            arcade.play_sound(self.buy_sound)
+        if symbol == arcade.key.KEY_3:
+            self.player.recharge_shields()
+            arcade.play_sound(self.buy_sound)
 
     def on_draw(self):
         arcade.start_render()
@@ -531,17 +670,17 @@ def clamp(value, _max, _min):
 
 def status_color(positiveness):
     if positiveness == 2:
-        return (0, 255, 0)
+        return 0, 255, 0
     elif positiveness == 1:
-        return (63, 127, 63)
+        return 63, 127, 63
     elif positiveness == 0:
-        return (127, 127, 0)
+        return 127, 127, 0
     elif positiveness == -1:
-        return (127, 63, 63)
+        return 127, 63, 63
     elif positiveness == -2:
-        return  (255, 0, 0)
+        return  255, 0, 0
     else:
-        (255, 255, 255)
+        return 255, 255, 255
 
 
 class Timer:
@@ -693,25 +832,35 @@ class GUIFacilityInfo(arcade.Sprite):
         self.bar_2.draw()
         self.bar_3.draw()
         arcade.draw_text(self.top_text_content, self.center_x - 60, self.center_y + 28, (255, 255, 255),
-                         font_name='fonts/editundo.ttf')
+                         font_name='fonts/editundo.ttf', anchor_y='center')
         arcade.draw_text(self.bottom_text_content, self.center_x - 60, self.center_y - 28, self.bottom_color,
-                         font_name='fonts/editundo.ttf')
+                         font_name='fonts/editundo.ttf', anchor_y='center')
 
 
 """ game objects"""
 
 
 class GameObject(AnimatedSprite):
-    def __init__(self, filename, scale, frequency=1 / 6):
+    def __init__(self, filename, scale=1.0, frequency=1 / 6):
         super(GameObject, self).__init__(filename, scale, frequency)
         self.fname = filename
         self.type = ''
         self._scale = scale
         self.speed_x = 0
         self.speed_y = 0
+        self._speed = 0
+        self.angle_speed = 0
         self.flight = None
         self.collidable = True
         self.move_by_flight = False
+
+    def upd(self, delta_time):
+        super(GameObject, self).upd(delta_time)
+        self.turn_left(self.angle_speed * delta_time)
+        self.center_x += self.speed_x * delta_time
+        self.center_y += self.speed_y * delta_time
+        if self.center_y < -10:
+            self.complete_destroy()
 
     def move(self, x, y):
         self.center_x += x
@@ -726,6 +875,13 @@ class GameObject(AnimatedSprite):
     def player_collide(self):
         pass
 
+    def set_angle(self, new_value: float):
+        self.angle = new_value
+
+    def fly_by_angle(self):
+        self.speed_x = self._speed * math.cos((self.angle + 90) * math.pi / 180)
+        self.speed_y = self._speed * math.sin((self.angle + 90) * math.pi / 180)
+
     def set_flight(self, flight):
         self.flight = flight
 
@@ -733,8 +889,33 @@ class GameObject(AnimatedSprite):
         self.remove_from_sprite_lists()
         del self
 
+    def set_angle_speed(self, speed):
+        self.angle_speed = speed
+
     def copy(self):
         return copy.deepcopy(self)
+
+
+""" collectables """
+
+
+class Collectable(GameObject):
+    def __init__(self, filename, amount, sound):
+        super(Collectable, self).__init__(filename)
+        self.amount = amount
+        self.sound = sound
+        self.move_by_flight = True
+        self.type = 'collectable'
+
+    def player_collide(self):
+        self.flight.player.add_scraps(self.amount)
+        arcade.play_sound(arcade.load_sound(self.sound))
+        self.complete_destroy()
+
+
+class SmallScrap(Collectable):
+    def __init__(self, filename):
+        super(SmallScrap, self).__init__(filename, random.randint(0, 10), 'sounds/scrap_collect.wav')
 
 
 """ explosion """
@@ -778,7 +959,7 @@ class RammingEnemy(Enemy):
     def __init__(self, filename, scale, speed, damage, rotate_type=0, enemy_type='', flying_fnames=None,
                  destruction_fnames=None):
         super(RammingEnemy, self).__init__(filename, scale, enemy_type)
-        self.speed = speed
+        self._speed = speed
         self._rotate_type = rotate_type
         self.fly_by_angle()
         if flying_fnames is not None:
@@ -797,10 +978,6 @@ class RammingEnemy(Enemy):
         self.destruction_timer = Timer(1.0, self.complete_destroy)
         self.destruction_timer.stop()
 
-    def fly_by_angle(self):
-        self.speed_x = self.speed * math.cos((self.angle + 90) * math.pi / 180)
-        self.speed_y = self.speed * math.sin((self.angle + 90) * math.pi / 180)
-
     def destroy(self):
         self.collidable = False
         self.set_state('destruction')
@@ -814,9 +991,6 @@ class RammingEnemy(Enemy):
         self.angle_speed = angle_speed
 
     def upd(self, delta_time):
-        self.turn_left(self.angle_speed * delta_time)
-        self.center_y += self.speed_y * delta_time
-        self.center_x += self.speed_x * delta_time
         super().upd(delta_time)
         self.destruction_timer.update(delta_time)
         if self.center_y < -50:
@@ -838,6 +1012,14 @@ class Asteroid(RammingEnemy):
 
     def destroy(self):
         super(Asteroid, self).destroy()
+        new_scrap = SmallScrap('sprites/scrap/scrap.png')
+        new_scrap.set_flight(self.flight)
+        new_scrap.set_position(self.center_x, self.center_y)
+        new_scrap.set_angle_speed(random.randint(-10000, 10000) / 10)
+        new_scrap.set_angle(random.randint(0, 360))
+        new_scrap._speed = random.randint(-50, 50)
+        new_scrap.fly_by_angle()
+        self.flight.add_object(new_scrap)
         arcade.play_sound(arcade.load_sound(self.destruction_sound))
 
     def collide(self, _object):
@@ -959,13 +1141,18 @@ class UpgradableValue(Value):
 
 
 class ShipFacility:
-    def __init__(self, name: str):
+    def __init__(self, name: str, icon: str):
         self.upgradables = []
         self.name = name
         self.status = ' '
+        self.showable = True
         self.status_positiveness = 0
         self.flight = None
         self.ship = None
+        self.icon = icon
+
+    def is_showable(self):
+        return self.showable
 
     def info(self):
         return [0, 0, 0, self.name, self.status, status_color(self.status_positiveness)]
@@ -1032,8 +1219,8 @@ class Bullet(GameObject):
 
 
 class Weapon(ShipFacility):
-    def __init__(self, name, reload_time, energy_cost):
-        super(Weapon, self).__init__(name)
+    def __init__(self, name, icon, reload_time, energy_cost):
+        super(Weapon, self).__init__(name, icon)
         self.reload_time = reload_time
         self.energy_cost = energy_cost
         self.upgradables.append(self.reload_time)
@@ -1043,9 +1230,9 @@ class Weapon(ShipFacility):
 
 
 class ShootingWeapon(Weapon):
-    def __init__(self, name, bullet_sprite, reload_time, energy_cost, key, sound):
+    def __init__(self, name, icon, bullet_sprite, reload_time, energy_cost, key, sound):
         # parent class init
-        super().__init__(name, reload_time, energy_cost)
+        super().__init__(name, icon, reload_time, energy_cost)
 
         # keys
         self.key = key
@@ -1101,8 +1288,8 @@ class ShootingWeapon(Weapon):
 
 
 class ShieldCapacitor(ShipFacility):
-    def __init__(self, name, max_shield):
-        super(ShieldCapacitor, self).__init__(name)
+    def __init__(self, name, icon, max_shield):
+        super(ShieldCapacitor, self).__init__(name, icon)
         self.max_shield = max_shield
         self.max_shield.set_facility(self)
         self.cur_shield = 0
@@ -1124,8 +1311,8 @@ class ShieldCapacitor(ShipFacility):
 
 
 class Generator(ShipFacility):
-    def __init__(self, name, energy_prod):
-        super(Generator, self).__init__(name)
+    def __init__(self, name, icon, energy_prod):
+        super(Generator, self).__init__(name, icon)
         self.energy_prod = energy_prod
         self.energy_prod.set_facility(self)
         self.upgradables = [self.energy_prod]
@@ -1137,8 +1324,8 @@ class Generator(ShipFacility):
 
 
 class EnergyStorage(ShipFacility):
-    def __init__(self, name, max_energy):
-        super().__init__(name)
+    def __init__(self, name, icon, max_energy):
+        super().__init__(name, icon)
         self.max_energy = max_energy
         self.max_energy.set_facility(self)
         self.upgradables = [self.max_energy]
@@ -1152,9 +1339,10 @@ class EnergyStorage(ShipFacility):
 
 class SpaceFoldStabilizer(ShipFacility):
     def __init__(self, left_border, right_border, coef, length, max_speed):
-        super().__init__(' ')
+        super().__init__(' ', '')
         self.left_sprite = None
         self.right_sprite = None
+        self.showable = False
         self.length = length
         self.left = left_border
         self.right = right_border
@@ -1202,9 +1390,10 @@ class SpaceFoldStabilizer(ShipFacility):
 
 class SideEngines(ShipFacility):
     def __init__(self, force):
-        super(SideEngines, self).__init__(' ')
+        super(SideEngines, self).__init__(' ', '')
         self.left_pressed = False
         self.right_pressed = False
+        self.showable = False
         self.force = force
 
     def on_key_press(self, symbol: int, modifiers: int):
@@ -1274,6 +1463,16 @@ class Ship:
         # sounds
         self.damage_sound = damage_sound
 
+        # inventory
+        self.credits = 0
+        self.scraps = 0
+
+    def add_scraps(self, scraps):
+        self.scraps += scraps
+
+    def  add_credits(self, credits):
+        self.credits += credits
+
     def collide(self, _object):
         if _object.type in ['asteroid', 'missile']:
             self.damage(_object.damage)
@@ -1282,6 +1481,15 @@ class Ship:
         remnant = self.shield_capacitor.damage(damage)
         self.hp -= remnant
         arcade.play_sound(self.damage_sound)
+
+    def repair(self):
+        self.hp = self.max_hp
+
+    def recharge(self):
+        self.energy_storage.energy = self.max_energy()
+
+    def recharge_shields(self):
+        self.shield_capacitor.cur_shield = self.shield_capacitor.max_shield.value()
 
     def give_energy(self, energy):
         self.energy_storage.add(energy)
@@ -1341,14 +1549,14 @@ class App(arcade.Window):
     def __init__(self, width, height, title):
         super().__init__(width, height, title)
         arcade.set_background_color(arcade.color.WHITE)
-        self.timeline = default_timeline
-        self.timeline.set_root(self)
+        self.controller = menu_controller
+        self.controller.set_root(self)
         self.player = default_player
         self.set_update_rate(1 / 60)
         self.set_vsync(True)
         self.scene = None
         self.set_fullscreen(True)
-        self.timeline.start()
+        self.controller.start()
 
     def on_key_press(self, symbol: int, modifiers: int):
         self.scene.on_key_press(symbol, modifiers)
@@ -1364,7 +1572,7 @@ class App(arcade.Window):
 
     def on_update(self, delta_time: float):
         self.scene.on_update(delta_time)
-        self.timeline.update()
+        self.controller.update()
 
 
 """global variables"""
@@ -1392,17 +1600,17 @@ default_enemy_2 = Missile('sprites/missile/missile_1.png', 1.0, 750, 5, default_
 default_player_sprite = arcade.Sprite("sprites/ship.png")
 default_player_sprite.set_points(((4, 60), (20, 36), (20, -52), (-20, -52), (-20, 36), (-4, 60)))
 default_bullet = Bullet("sprites/bullet.png", 1.0, 750, 1, 0)
-default_gun = ShootingWeapon('Main cannon', default_bullet, UpgradableValue([1, 0.75, 0.5], 'reload'), ConstantValue(0),
+default_gun = ShootingWeapon('Main cannon', 'sprites/icons/icon_cannon.png', default_bullet, UpgradableValue([1, 0.75, 0.5], 'reload'), ConstantValue(0),
                              arcade.key.SPACE, arcade.load_sound('sounds/sfx_wpn_cannon4.wav'))
 default_super_bullet = Bullet("sprites/super_bullet.png", 1.0, 500, -1, 0)
-default_super_gun = ShootingWeapon('Plasma gun', default_super_bullet, ConstantValue(0),
+default_super_gun = ShootingWeapon('Plasma gun', 'sprites/icons/icon_plasma_gun.png', default_super_bullet, ConstantValue(0),
                                    UpgradableValue([25, 20, 15], 'shoot energy'),
                                    arcade.key.W, arcade.load_sound('sounds/sfx_wpn_laser2.wav'))
-default_generator = Generator('Nuclear reactor', UpgradableValue([5, 10], 'production'))
-default_energy_storage = EnergyStorage('Energy batteries', UpgradableValue([100, 250], 'capacity'))
+default_generator = Generator('Nuclear reactor', 'sprites/icons/generator_icon.png',UpgradableValue([5, 10], 'production'))
+default_energy_storage = EnergyStorage('Energy batteries', 'sprites/icons/icon_batteries.png', UpgradableValue([100, 250], 'capacity'))
 default_stabilizer = SpaceFoldStabilizer(360, 1920 - 360, 1500, 300, 750)
 default_side_engines = SideEngines(250)
-default_shield_capacitor = ShieldCapacitor('Shield capacitor', UpgradableValue([50, 75, 100, 150], 'shield capacity'))
+default_shield_capacitor = ShieldCapacitor('Shield capacitor', 'sprites/icons/icon_shield.png', UpgradableValue([50, 75, 100, 150], 'shield capacity'))
 default_shield_capacitor.charge(50)
 default_player = Ship(default_player_sprite, default_gun, default_energy_storage, default_shield_capacitor,
                       [default_generator,
@@ -1411,6 +1619,7 @@ default_player = Ship(default_player_sprite, default_gun, default_energy_storage
                        default_side_engines], 100,
                       arcade.load_sound('sounds/sfx_sounds_error8.wav'))
 default_timeline = NodeTimeLine()
+menu_controller = MenuController(default_timeline)
 
 app = App(1920, 1080, 'Arcade')
 arcade.run()
