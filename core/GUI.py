@@ -39,11 +39,46 @@ class GUIText(arcade.Sprite):
         self.text_color = text_color
         self.font = font
         self.font_size = font_size
+        self.text_center_x = 0
+        self.text_center_y = 0
+
+    def draw_text(self):
+        arcade.draw_text(self.text, self.text_center_x, self.text_center_y, self.text_color,
+                         font_name=self.font, font_size=self.font_size, anchor_x='center', anchor_y='center')
+
+    def set_position(self, center_x: float, center_y: float):
+        super(GUIText, self).set_position(center_x, center_y)
+        self.text_center_x = center_x
+        self.text_center_y = center_y
 
     def draw(self):
         super(GUIText, self).draw()
-        arcade.draw_text(self.text, self.center_x, self.center_y, self.text_color,
-                         font_name=self.font, font_size=self.font_size, anchor_x='center', anchor_y='center')
+        self.draw_text()
+
+
+class GUITextUpgrade(GUIText):
+    def __init__(self, filename, text, text_color, font, font_size, icon_1, icon_2):
+        super(GUITextUpgrade, self).__init__(filename, text, text_color, font, font_size)
+        self.icon_1 = arcade.Sprite()
+        self.icon_1.append_texture(icon_1)
+        self.icon_1.set_texture(0)
+        self.icon_2 = arcade.Sprite()
+        self.icon_2.append_texture(icon_2)
+        self.icon_2.set_texture(0)
+
+    def set_position(self, center_x: float, center_y: float):
+        super(GUITextUpgrade, self).set_position(center_x, center_y)
+        self.icon_1.set_position(center_x - self.width / 2 + 36, center_y)
+        self.icon_2.set_position(center_x - self.width / 2 + 100, center_y)
+        self.text_center_x += 56
+
+    def draw_icons(self):
+        self.icon_1.draw()
+        self.icon_2.draw()
+
+    def draw(self):
+        super(GUITextUpgrade, self).draw()
+        self.draw_icons()
 
 
 class GUIFacilityInfo(arcade.Sprite):

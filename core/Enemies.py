@@ -1,17 +1,18 @@
-import math
 import random
 
 import arcade
 
 from core.Collectables import SmallScrap
-from core.GameObjects import GameObject
+from core.GameObjects import GameObject, spawn, aim_at_player, random_rotation, random_speed, random_angle
 from core.Utilities import Timer
+
+
+scrap = SmallScrap('sprites/scrap/scrap.png')
 
 
 class Enemy(GameObject):
     def __init__(self, filename, scale, enemy_type):
         super(Enemy, self).__init__(filename, scale)
-        self._rotate_type = 0
         self.type = enemy_type
         self.collidable = True
 
@@ -23,9 +24,7 @@ class RammingEnemy(Enemy):
     def __init__(self, filename, scale, speed, damage, rotate_type=0, enemy_type='', flying_fnames=None,
                  destruction_fnames=None):
         super(RammingEnemy, self).__init__(filename, scale, enemy_type)
-        self._speed = speed
-        self._rotate_type = rotate_type
-        self.fly_by_angle()
+        self.speed = speed
         if flying_fnames is not None:
             self.flying_fnames = flying_fnames
         else:
@@ -41,6 +40,7 @@ class RammingEnemy(Enemy):
         self.damage = damage
         self.destruction_timer = Timer(1.0, self.complete_destroy)
         self.destruction_timer.stop()
+
 
     def destroy(self):
         self.collidable = False
@@ -71,6 +71,11 @@ class Asteroid(RammingEnemy):
         self.move_by_flight = True
         self.destruction_sound = destruction_sound
 
+    def on_spawn(self):
+        random_rotation(self)
+        random_angle(self)
+        random_speed(self, 25)
+
     def player_collide(self):
         self.destroy()
 
@@ -90,6 +95,10 @@ class Missile(RammingEnemy):
     def __init__(self, filename, scale, speed, damage, explosion, destruction_fnames=None):
         super(Missile, self).__init__(filename, scale, speed, damage, 2, 'missile', destruction_fnames)
         self.explosion = explosion
+
+    def on_spawn(self):
+        aim_at_player(self, self.flight)
+        self.fly_by_angle(self.speed)
 
     def player_collide(self):
         self.destroy()
@@ -122,30 +131,11 @@ class TimeSpawner:
         self.right = flight.right_spawn
 
     def spawn_enemy(self):
-        new_enemy = self.object.copy()
-        new_enemy.set_flight(self.flight)
-        new_enemy.center_x = random.randint(self.left, self.right)
-        new_enemy.center_y = self.top + 50
-        if new_enemy.rotate_type() == 1:
-            new_enemy.turn_left(180)
-            new_enemy.set_angle_speed(random.randint(-100, 100))
-        if new_enemy.rotate_type() == 2:
-            angle = 180 - math.atan((new_enemy.center_x - self.flight.player.ship_sprite.center_x) /
-                                    (new_enemy.center_y - self.flight.player.ship_sprite.center_y)) / math.pi * 180
-            new_enemy.turn_left(angle)
-        new_enemy.fly_by_angle()
-        self.flight.add_object(new_enemy)
+        spawn(self.object, self.flight, random.randint(self.left, self.right), self.top + 50)
 
     def update(self, delta_time):
         self.spawn_timer.update(delta_time)
 
 
 def spawn_scrap(flight, x, y):
-    new_scrap = SmallScrap('sprites/scrap/scrap.png')
-    new_scrap.set_flight(flight)
-    new_scrap.set_position(x, y)
-    new_scrap.set_angle_speed(random.randint(-10000, 10000) / 10)
-    new_scrap.set_angle(random.randint(0, 360))
-    new_scrap._speed = random.randint(-50, 50)
-    new_scrap.fly_by_angle()
-    flight.add_object(new_scrap)
+    spawn(scrap, flight, x, y)

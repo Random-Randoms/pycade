@@ -1,10 +1,9 @@
 import arcade
 
-from core.GUI import GUIIdle, GUIText, GUIBar, GUIMovable, GUIFacilityInfo
+from core.GUI import GUIIdle, GUIText, GUIBar, GUIMovable, GUIFacilityInfo, GUITextUpgrade
 from core.Ship import Ship
 from core.Utilities import Timer, Controls, clamp, choose_random_subset, ParamTimer
-from content.content import buttons, default_player_sprite, default_gun, default_super_gun, default_generator, \
-    default_energy_storage, default_stabilizer, default_side_engines, default_shield_capacitor
+from content.content import buttons, content
 
 
 class Scene:
@@ -86,12 +85,7 @@ class ChooseNewGame(Scene):
         self.test_regime = GUIText('sprites/gui/text_window_dark.png', '1: test regime', (255, 255, 255),
                                    'fonts/editundo.ttf', 50)
         self.set_gui()
-        self.player = Ship(default_player_sprite, default_gun, default_energy_storage, default_shield_capacitor,
-                           [default_generator,
-                            default_super_gun,
-                            default_stabilizer,
-                            default_side_engines], 100,
-                           arcade.load_sound('sounds/sfx_sounds_error8.wav'))
+        self.player = content.get_ship(0)
         self.player.shield_capacitor.charge(25)
         self.player.add_credits(100)
 
@@ -474,8 +468,10 @@ class UpgradeHangar(StationFacility):
         self.gui_options_text = []
         for i in range(len(self.upgrades)):
             self.gui_options.append(
-                GUIText('sprites/gui/text_window_2.png', str(i + 1) + ': ' + self.upgrades[i][0].upgrade_info(),
-                        (36, 59, 97), 'fonts/editundo.ttf', 20))
+                GUITextUpgrade('sprites/gui/upgrade_text.png', str(i + 1) + ': ' + self.upgrades[i][0].upgrade_info(),
+                               (36, 59, 97), 'fonts/editundo.ttf', 20,
+                               arcade.load_texture(self.upgrades[i][0].get_facility().icon, scale=0.5),
+                               self.upgrades[i][0].get_icon()))
             self.gui_options_text.append(str(i + 1) + ': ' + self.upgrades[i][0].upgrade_info())
         self.text_timers = []
         for i in range(len(self.upgrades)):

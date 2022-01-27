@@ -71,7 +71,7 @@ class NodeTimeLine(TimeLine):
         super(NodeTimeLine, self).start()
         self.root.set_scene(Flight(self.root.player, self.root.width, self.root.height,
                                    [TimeSpawner(default_enemy, 0.15),
-                                    TimeSpawner(default_enemy_2, 3.0)], 360, 1920 - 360, 200, 1, 100))
+                                    TimeSpawner(default_enemy_2, 3.0)], 360, 1920 - 360, 200, 2, 200))
 
     def update(self):
         player = self.root.player

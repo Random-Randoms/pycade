@@ -22,6 +22,9 @@ class Value:
     def set_facility(self, facility):
         self.facility = facility
 
+    def get_facility(self):
+        return self.facility
+
 
 class ConstantValue(Value):
     def __init__(self, _value, name=''):
@@ -30,13 +33,20 @@ class ConstantValue(Value):
 
 
 class UpgradableValue(Value):
-    def __init__(self, variants, prices, name=''):
+    def __init__(self, variants, prices, name='', icons=None):
         super(UpgradableValue, self).__init__(name)
         self._upgradable = True
         self.variants = variants
+        if icons is None:
+            icons = [arcade.Texture('')] * len(variants)
+        self._current_icon = icons[0]
+        self._icons = icons
         self.prices = prices
         self.level = 0
         self._value = variants[self.level]
+
+    def get_icon(self):
+        return self._current_icon
 
     def upgrade_cost(self):
         return self.prices[self.level]
@@ -51,12 +61,13 @@ class UpgradableValue(Value):
         if len(self.variants) - 1 > self.level:
             self.level += 1
             self._value = self.variants[self.level]
+            self._current_icon = self._icons[self.level]
         if len(self.variants) - 1 == self.level:
             self._upgradable = False
 
     def upgrade_info(self):
         if self._upgradable:
-            return 'Upgrade ' + self.name + ' of ' + str(self.facility.name) + ' \n ' + 'from ' + str(self.value()) +\
+            return 'Upgrade ' + self.name + ' of ' + str(self.facility.name) + ' \n ' + 'from ' + str(self.value()) + \
                    ' to ' + str(self.next_value()) + ' for ' + str(self.upgrade_cost())
 
         else:
@@ -194,7 +205,7 @@ class ShootingWeapon(Weapon):
 
     def shoot(self):
         if self.reload_time_left() <= 0 and self.ship.energy_storage.energy >= self.energy_cost.value():
-            arcade.play_sound(self.shoot_sound)
+            arcade.play_sound(arcade.load_sound(self.shoot_sound))
             self.ship.energy_storage.add(-self.energy_cost.value())
             self.time_since_last_shoot = 0
             new_bullet = self.bullet_sprite.copy()
@@ -204,7 +215,7 @@ class ShootingWeapon(Weapon):
             new_bullet.add_speed(self.ship.current_speed)
             self.flight.add_object(new_bullet)
         else:
-            arcade.play_sound(self.error_sound)
+            arcade.play_sound(arcade.load_sound(self.error_sound))
 
 
 class ShieldCapacitor(ShipFacility):
@@ -413,8 +424,8 @@ class Ship:
         if self.scraps < 0:
             self.scraps = 0
 
-    def  add_credits(self, credits):
-        self.credits += credits
+    def add_credits(self, _credits):
+        self.credits += _credits
         if self.credits < 0:
             self.credits = 0
 
@@ -425,7 +436,7 @@ class Ship:
     def damage(self, damage):
         remnant = self.shield_capacitor.damage(damage)
         self.hp -= remnant
-        arcade.play_sound(self.damage_sound)
+        arcade.play_sound(arcade.load_sound(self.damage_sound))
 
     def repair(self):
         self.hp = self.max_hp
@@ -465,6 +476,8 @@ class Ship:
         for facility in self.facilities:
             facility.update(delta_time)
         self.move(delta_time)
+        self.ship_sprite.upd(delta_time)
+        print(self.ship_sprite.cur_index)
 
     def set_ship(self):
         for facility in self.facilities:

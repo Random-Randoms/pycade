@@ -55,7 +55,7 @@ class Controls:
         self.shoot = shoot
 
 
-def cut(filename='', rows=1, columns=1, amount=1):
+def cut(filename='', rows=1, columns=1, amount=1, scale=1.0):
     num = 0
     source_image = PIL.Image.open(filename)
     width = source_image.width
@@ -71,7 +71,8 @@ def cut(filename='', rows=1, columns=1, amount=1):
             x = width * i / columns
             y = height * j / rows
             image = source_image.crop((x, y, x + width_0, y + height_0))
-            textures.append(arcade.Texture('', image))
+            image = image.resize((round(width_0 * scale), round(height_0 * scale)))
+            textures.append(arcade.Texture(str(i * columns + j), image))
             if num >= amount:
                 break
     return textures
