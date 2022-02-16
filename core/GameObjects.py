@@ -37,49 +37,28 @@ class AnimatedSprite(arcade.Sprite):
 
 
 class GameObject(AnimatedSprite):
-    def __init__(self, filename, scale=1.0, frequency=1 / 6):
+    def __init__(self, name, filename, scale=1.0, frequency=1 / 6):
         super(GameObject, self).__init__(filename, scale, frequency)
-        self._rotate_type = 0
-        self._speed_type = 0
+        self.name = name
         self.fname = filename
         self.type = ''
         self._scale = scale
         self.speed_x = 0
         self.speed_y = 0
+        self.force_x = 0
+        self.force_y = 0
         self.angle_speed = 0
         self.flight = None
         self.collidable = True
         self.move_by_flight = False
 
-    def  on_spawn(self):
+    """ event methods """
+
+    def on_destroy(self):
         pass
 
-    def get_speed_type(self):
-        return self._speed_type
-
-    def set_speed_type(self, speed_type):
-        self._speed_type = speed_type
-
-    def get_rotate_type(self):
-        return self._rotate_type
-
-    def set_rotate_type(self, rotate_type):
-        self._rotate_type = rotate_type
-
-    def upd(self, delta_time):
-        super(GameObject, self).upd(delta_time)
-        self.turn_left(self.angle_speed * delta_time)
-        self.center_x += self.speed_x * delta_time
-        self.center_y += self.speed_y * delta_time
-        if self.center_y < 0:
-            self.complete_destroy()
-
-    def move(self, x, y):
-        self.center_x += x
-        self.center_y += y
-
-    def is_collidable(self):
-        return self.collidable
+    def on_spawn(self):
+        pass
 
     def collide(self, _object):
         pass
@@ -87,22 +66,60 @@ class GameObject(AnimatedSprite):
     def player_collide(self):
         pass
 
+    """ *physical* methods """
+
+    def set_speed(self, speed_x, speed_y):
+        self.speed_x = speed_x
+        self.speed_y = speed_y
+
+    def add_force(self, force_x, force_y):
+        self.force_x += force_x
+        self.force_y += force_y
+
+    def move(self, x, y):
+        self.center_x += x
+        self.center_y += y
+
     def set_angle(self, new_value: float):
         self.angle = new_value
+
+    def set_angle_speed(self, speed):
+        self.angle_speed = speed
+
+    def rotate_by_speed(self):
+        self.angle = math.atan(self.speed_y / self.speed_x) *180 / math.pi
+        if self.speed_y < 0:
+            self.angle += 180
 
     def fly_by_angle(self, _speed):
         self.speed_x = _speed * math.cos((self.angle + 90) * math.pi / 180)
         self.speed_y = _speed * math.sin((self.angle + 90) * math.pi / 180)
 
-    def set_flight(self, flight):
-        self.flight = flight
-
     def complete_destroy(self):
         self.remove_from_sprite_lists()
         del self
 
-    def set_angle_speed(self, speed):
-        self.angle_speed = speed
+    """ property methods """
+
+    def set_flight(self, flight):
+        self.flight = flight
+
+    def is_collidable(self):
+        return self.collidable
+
+    """ misc """
+
+    def upd(self, delta_time):
+        super(GameObject, self).upd(delta_time)
+        self.turn_left(self.angle_speed * delta_time)
+        self.speed_x += self.force_x
+        self.speed_y += self.force_y
+        self.force_x = 0
+        self.force_y = 0
+        self.center_x += self.speed_x * delta_time
+        self.center_y += self.speed_y * delta_time
+        if self.center_y < 0:
+            self.complete_destroy()
 
     def copy(self):
         return copy.deepcopy(self)
@@ -135,3 +152,17 @@ def spawn(_object, flight, x, y):
     new_object.on_spawn()
 
     flight.add_object(new_object)
+    return new_object
+
+
+def spawn_speed(_object, flight, x, y, speed_x, speed_y):
+    new_object = spawn(_object, flight, x, y)
+    new_object.set_speed(speed_x, speed_y)
+    new_object.rotate_by_speed()
+
+
+def spawn_angle(_object, flight, x, y, angle):
+    new_object = spawn(_object, flight, x, y)
+    new_object.set_angle(angle)
+    new_object.fly_by_angle(new_object.speed)
+

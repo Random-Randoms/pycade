@@ -21,15 +21,21 @@ class GUIIdle(arcade.Sprite):
 
 
 class GUIMovable(arcade.Sprite):
-    def __init__(self, filename, speed, __height):
+    def __init__(self, filename, speed, __height_max, __height_delta, inversed=False):
         super().__init__(filename)
         self.speed = speed
-        self.__height = __height
+        self.inv = inversed
+        self.__height_delta = __height_delta
+        self.__height_max = __height_max
 
     def move(self, delta_time):
         self.center_y += self.speed * delta_time
-        if self.center_y >= self.__height:
-            self.center_y -= self.__height
+        if not self.inv:
+            if self.center_y >= self.__height_max:
+                self.center_y -= self.__height_delta
+        else:
+            if self.center_y <= self.__height_max:
+                self.center_y += self.__height_delta
 
 
 class GUIText(arcade.Sprite):

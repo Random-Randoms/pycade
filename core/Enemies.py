@@ -1,5 +1,8 @@
 import random
 
+import pyglet.image
+from pydub import AudioSegment
+from pyglet.image import load
 import arcade
 
 from core.Collectables import SmallScrap
@@ -7,45 +10,40 @@ from core.GameObjects import GameObject, spawn, aim_at_player, random_rotation, 
 from core.Utilities import Timer
 
 
-scrap = SmallScrap('sprites/scrap/scrap.png')
+scrap = SmallScrap('small scrap', 'sprites/scrap/scrap.png')
 
 
 class Enemy(GameObject):
-    def __init__(self, filename, scale, enemy_type):
-        super(Enemy, self).__init__(filename, scale)
+    def __init__(self, name, filename, scale, enemy_type):
+        super(Enemy, self).__init__(name, filename, scale)
         self.type = enemy_type
         self.collidable = True
 
-    def rotate_type(self):
-        return self._rotate_type
-
 
 class RammingEnemy(Enemy):
-    def __init__(self, filename, scale, speed, damage, rotate_type=0, enemy_type='', flying_fnames=None,
-                 destruction_fnames=None):
-        super(RammingEnemy, self).__init__(filename, scale, enemy_type)
+    def __init__(self, name, filename, scale, speed, damage, enemy_type='', flying_textures=None, destruction_textures=None):
+        super(RammingEnemy, self).__init__(name, filename, scale, enemy_type)
         self.speed = speed
-        if flying_fnames is not None:
-            self.flying_fnames = flying_fnames
+        if flying_textures is not None:
+            self.flying_textures = flying_textures
         else:
-            self.flying_fnames = [filename]
-        self.add_state_fnames('flying', self.flying_fnames)
-        if destruction_fnames is not None:
-            self.destruction_fnames = destruction_fnames
+            self.flying_textures = [arcade.load_texture(filename)]
+        self.add_state_textures('flying', self.flying_textures)
+        if destruction_textures is not None:
+            self.destruction_textures = destruction_textures
         else:
-            self.destruction_fnames = [filename]
-        self.add_state_fnames('destruction', self.destruction_fnames)
+            self.destruction_textures = [arcade.load_texture(filename)]
+        self.add_state_textures('destruction', self.destruction_textures)
         self.set_state('flying')
         self.angle_speed = 0
         self.damage = damage
         self.destruction_timer = Timer(1.0, self.complete_destroy)
         self.destruction_timer.stop()
 
-
-    def destroy(self):
+    def on_destroy(self):
         self.collidable = False
         self.set_state('destruction')
-        self.destruction_timer.trigger_time = self.frequency * (len(self.destruction_fnames) - 1)
+        self.destruction_timer.trigger_time = self.frequency * (len(self.destruction_textures) - 1)
         self.destruction_timer.start()
 
     def is_collidable(self):
@@ -65,11 +63,10 @@ class RammingEnemy(Enemy):
 
 
 class Asteroid(RammingEnemy):
-    def __init__(self, filename, scale, speed, damage, destruction_sound, destruction_fnames=None):
-        super().__init__(filename, scale, speed, damage, 1, enemy_type='asteroid',
-                         destruction_fnames=destruction_fnames)
+    def __init__(self, name, filename, scale, speed, damage, destruction_sound, destruction_textures=None):
+        super().__init__(name, filename, scale, speed, damage, enemy_type='asteroid', destruction_textures=destruction_textures)
         self.move_by_flight = True
-        self.destruction_sound = destruction_sound
+        self.destruction_sound = AudioSegment.from_wav('sounds/sfx_exp_shortest_soft7.wav')
 
     def on_spawn(self):
         random_rotation(self)
@@ -77,23 +74,23 @@ class Asteroid(RammingEnemy):
         random_speed(self, 25)
 
     def player_collide(self):
-        self.destroy()
+        self.on_destroy()
 
-    def destroy(self):
-        super(Asteroid, self).destroy()
+    def on_destroy(self):
+        super(Asteroid, self).on_destroy()
         spawn_scrap(self.flight, self.center_x, self.center_y)
         spawn_scrap(self.flight, self.center_x, self.center_y)
         spawn_scrap(self.flight, self.center_x, self.center_y)
-        arcade.play_sound(arcade.load_sound(self.destruction_sound))
+        #play(self.destruction_sound)
 
     def collide(self, _object):
         if _object.type in ['missile', 'bullet', 'explosion']:
-            self.destroy()
+            self.on_destroy()
 
 
 class Missile(RammingEnemy):
-    def __init__(self, filename, scale, speed, damage, explosion, destruction_fnames=None):
-        super(Missile, self).__init__(filename, scale, speed, damage, 2, 'missile', destruction_fnames)
+    def __init__(self, name, filename, scale, speed, damage, explosion, destruction_textures=None):
+        super(Missile, self).__init__(name, filename, scale, speed, damage, 'missile')
         self.explosion = explosion
 
     def on_spawn(self):
@@ -101,16 +98,15 @@ class Missile(RammingEnemy):
         self.fly_by_angle(self.speed)
 
     def player_collide(self):
-        self.destroy()
+        self.on_destroy()
 
     def collide(self, _object):
         if _object.type in ['bullet']:
-            self.destroy()
+            self.on_destroy()
 
-    def destroy(self):
+    def on_destroy(self):
         new_explosion = self.explosion.copy()
-        new_explosion.position = self.position
-        self.flight.add_object(new_explosion)
+        spawn(new_explosion, self.flight, self.center_x, self.center_y)
         self.complete_destroy()
 
 

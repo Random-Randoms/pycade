@@ -85,7 +85,7 @@ class ChooseNewGame(Scene):
         self.test_regime = GUIText('sprites/gui/text_window_dark.png', '1: test regime', (255, 255, 255),
                                    'fonts/editundo.ttf', 50)
         self.set_gui()
-        self.player = content.get_ship(0)
+        self.player = content.get_object("ship.pacific")
         self.player.shield_capacitor.charge(25)
         self.player.add_credits(100)
 
@@ -133,8 +133,9 @@ class Flight(GameScene):
         self.left_gui = GUIIdle("sprites/gui/left_gui.png")
         self.right_gui = GUIIdle("sprites/gui/right_gui.png")
         self.mid_gui = GUIBar('sprites/gui/mid_gui.png', 3, 4, 12)
-        self.left_border = GUIMovable("sprites/gui/stab_border_left.png", 50, self.height)
-        self.right_border = GUIMovable("sprites/gui/stab_border_right.png", 50, self.height)
+        self.left_border = GUIMovable("sprites/gui/stab_border_left.png", 50, self.height, self.height)
+        self.right_border = GUIMovable("sprites/gui/stab_border_right.png", 50, self.height, self.height)
+        self.background = GUIMovable('sprites/background.jpg', 0, 0, self.height, True)
         self.showable_facilities = []
         for facility in self.player.facilities:
             if facility.is_showable():
@@ -202,6 +203,7 @@ class Flight(GameScene):
         self.mid_gui.set_position(8 * 120, 1 * 120)
         self.left_border.set_position(4 * 120, 4.5 * 120)
         self.right_border.set_position(12 * 120, 4.5 * 120)
+        self.background.set_position(8 * 120,  9 * 120)
         for i in range(len(self.showable_facilities)):
             self.facility_info[i].set_position(1.5 * 120, 7 * 120 - i * 120)
 
@@ -214,6 +216,9 @@ class Flight(GameScene):
 
     """ draw methods """
 
+    def gui_draw_bg(self):
+        self.background.draw()
+
     def gui_draw(self):
         self.left_border.draw()
         self.right_border.draw()
@@ -224,7 +229,8 @@ class Flight(GameScene):
         self.mid_gui.draw()
         self.progress_bar.draw()
         for gui in self.facility_info:
-            gui.draw()
+            # gui.draw()
+            pass
         arcade.draw_text('credits: ' + str(self.player.credits), 13.5 * 120, 8.5 * 120, (0, 0, 0), font_size=20,
                          font_name='fonts/editundo.ttf')
         arcade.draw_text('scraps: ' + str(self.player.scraps), 13.5 * 120, 8 * 120, (0, 0, 0), font_size=20,
@@ -234,6 +240,7 @@ class Flight(GameScene):
 
     def on_draw(self):
         arcade.start_render()
+        self.gui_draw_bg()
         self.objects.draw()
         self.explosions.draw()
 
@@ -253,6 +260,7 @@ class Flight(GameScene):
 
         # checking collisions
         self.check_collision_objects()
+
         self.check_collision_player()
 
         # updating objects
@@ -296,6 +304,8 @@ class Flight(GameScene):
         self.mid_gui.upd(self.player.shield_capacitor.cur_shield / self.player.shield_capacitor.max_shield.value())
         self.left_border.move(delta_time)
         self.right_border.move(delta_time)
+        self.background.speed = -self.speed // 2
+        self.background.move(delta_time)
         for i in range(len(self.showable_facilities)):
             self.facility_info[i].set_content(self.showable_facilities[i].info())
             self.facility_info[i].update()
@@ -318,7 +328,9 @@ class Flight(GameScene):
     def check_collision_objects(self):
         for object_1 in self.objects:
             for object_2 in self.objects:
-                if object_1.is_collidable() and object_2.is_collidable():
+                if object_1.is_collidable() and object_2.is_collidable() \
+                        and not (object_1.type == 'asteroid' and
+                                 object_2.type == 'asteroid'):
                     if arcade.check_for_collision(object_1, object_2):
                         object_1.collide(object_2)
                         object_2.collide(object_1)
@@ -367,7 +379,7 @@ class Station(GameScene):
             self.gui_facility[i].set_position(8 * 120, 6 * 120 - 90 * i)
 
     def set_up_player(self):
-        self.player.spawn(self.width / 2, 10)
+        self.player.spawn(self.width / 2, -50)
 
     def draw_gui(self):
         self.gui_left_1.draw()

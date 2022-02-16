@@ -4,6 +4,7 @@ import arcade
 
 from core.GameObjects import GameObject
 from core.Utilities import status_color, clamp
+from core.GameObjects import spawn, spawn_speed, spawn_angle
 
 
 class Value:
@@ -108,45 +109,69 @@ class ShipFacility:
 
 
 class Bullet(GameObject):
-    def __init__(self, fname, scale, speed, max_collisions=1, on_collision=0):
+    def __init__(self, name, fname, scale, speed, max_collisions=1):
         self.speed = speed
-        self.on_collision = on_collision
         self.collisions = 0
         self.max_collisions = max_collisions
-        super().__init__(fname, scale)
+        super().__init__(name, fname, scale)
         self.type = 'bullet'
-        self.change_x = 0
-        self.change_y = self.speed
+        self.speed_x = 0
+        self.speed_y = self.speed
+
+    def on_destroy(self):
+        self.complete_destroy()
 
     def add_speed(self, spd):
-        self.change_x += spd
+        self.speed_x += spd
 
     def set_velocity(self):
-        self.change_x = -self.speed * math.sin(math.radians(self.angle))
-        self.change_y = self.speed * math.cos(math.radians(self.angle))
+        self.speed_x = -self.speed * math.sin(math.radians(self.angle))
+        self.speed_y = self.speed * math.cos(math.radians(self.angle))
 
     def upd(self, delta_time):
-        self.center_x += self.change_x * delta_time
-        self.center_y += self.change_y * math.cos(math.radians(self.angle)) * delta_time
+        self.center_x += self.speed_x * delta_time
+        self.center_y += self.speed_y * math.cos(math.radians(self.angle)) * delta_time
 
     def collide(self, _object):
         if _object.type in ['asteroid', 'missile']:
             self.collisions += 1
             if self.collisions == self.max_collisions:
-                self.last_collision()
+                self.on_destroy()
 
     def copy(self):
         new_bullet = super().copy()
         new_bullet.collisions = 0
         return new_bullet
 
-    def last_collision(self):
-        if self.on_collision <= 0:
-            self.complete_destroy()
-
     def complete_destroy(self):
         self.remove_from_sprite_lists()
         del self
+
+
+class ExplosiveBullet(Bullet):
+    def __init__(self, name, fname, scale, speed, max_collisions, explosion):
+        super(ExplosiveBullet, self).__init__(name, fname, scale, speed, max_collisions)
+        self.explosion = explosion
+
+    def on_destroy(self):
+        spawn(self.explosion, self.flight, self.center_x, self.center_y)
+        super(ExplosiveBullet, self).on_destroy()
+
+
+class ClusterBullet(Bullet):
+    def __init__(self, name, fname, scale, speed, max_collisions, shard, sound):
+        super(ClusterBullet, self).__init__(name, fname, scale, speed, max_collisions)
+        self.shard = shard
+        self.sound = sound
+
+    def on_destroy(self):
+        spawn_angle(self.shard, self.flight, self.center_x, self.center_y, self.angle)
+        spawn_angle(self.shard, self.flight, self.center_x, self.center_y, self.angle + 90)
+        spawn_angle(self.shard, self.flight, self.center_x, self.center_y, self.angle + 45)
+        spawn_angle(self.shard, self.flight, self.center_x, self.center_y, self.angle - 90)
+        spawn_angle(self.shard, self.flight, self.center_x, self.center_y, self.angle - 45)
+        arcade.play_sound(arcade.load_sound(self.sound))
+        self.complete_destroy()
 
 
 class Weapon(ShipFacility):
@@ -372,8 +397,22 @@ class SideEngines(ShipFacility):
             self.ship.add_force(self.force)
 
 
+class ScrapMagnet(ShipFacility):
+    def __init__(self, name, icon, force, time, disk):
+        super(ScrapMagnet, self).__init__(name, icon)
+        self.force = force
+        self.time = time
+        self.disk = disk
+        self.upgradables.append(self.force)
+        self.upgradables.append(self.time)
+
+    def on_key_press(self, symbol: int, modifiers: int):
+        if symbol == arcade.key.E:
+            spawn(self.disk, self.flight, self.ship.get_center_x(), self.ship.get_center_y())
+
+
 class Ship:
-    def __init__(self, ship_sprite, main_weapon, energy_storage, shield_capacitor, facilities, max_hp, damage_sound):
+    def __init__(self, name, ship_sprite, main_weapon, energy_storage, shield_capacitor, facilities, max_hp, damage_sound):
         # sprites
         self.ship_sprite = ship_sprite
         self.sprites = arcade.SpriteList()
@@ -418,6 +457,15 @@ class Ship:
         # inventory
         self.credits = 0
         self.scraps = 0
+
+        # info
+        self.name = name
+
+    def get_center_x(self):
+        return self.ship_sprite.center_x
+
+    def get_center_y(self):
+        return self.ship_sprite.center_y
 
     def add_scraps(self, scraps):
         self.scraps += scraps
@@ -477,7 +525,6 @@ class Ship:
             facility.update(delta_time)
         self.move(delta_time)
         self.ship_sprite.upd(delta_time)
-        print(self.ship_sprite.cur_index)
 
     def set_ship(self):
         for facility in self.facilities:

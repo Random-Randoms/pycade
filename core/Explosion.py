@@ -5,8 +5,8 @@ from core.Utilities import Timer
 
 
 class Explosion(GameObject):
-    def __init__(self, filename, scale, explosion_sound, explosion_fnames):
-        super(Explosion, self).__init__(filename, scale, 1 / 12)
+    def __init__(self, name, filename, scale, explosion_sound, explosion_fnames):
+        super(Explosion, self).__init__(name, filename, scale, 1 / 12)
         self.add_state_fnames('explosion', explosion_fnames)
         self.explosion_fnames = explosion_fnames
         self.set_state('explosion')

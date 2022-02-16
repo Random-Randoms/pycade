@@ -6,8 +6,8 @@ from core.GameObjects import GameObject, random_speed, random_rotation, random_a
 
 
 class Collectable(GameObject):
-    def __init__(self, filename, amount, sound):
-        super(Collectable, self).__init__(filename)
+    def __init__(self, name, filename, amount, sound):
+        super(Collectable, self).__init__(name, filename)
         self.amount = amount
         self.sound = sound
         self.move_by_flight = True
@@ -25,5 +25,5 @@ class Collectable(GameObject):
 
 
 class SmallScrap(Collectable):
-    def __init__(self, filename):
-        super(SmallScrap, self).__init__(filename, random.randint(0, 10), 'sounds/scrap_collect.wav')
+    def __init__(self, name, filename):
+        super(SmallScrap, self).__init__(name, filename, random.randint(0, 10), 'sounds/scrap_collect.wav')

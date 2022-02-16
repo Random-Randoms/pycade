@@ -1,5 +1,5 @@
 import arcade
-from content.content import default_player
+from content.content import default_player, content
 from core.Control import MenuController, NodeTimeLine
 
 
@@ -7,7 +7,7 @@ class App(arcade.Window):
     def __init__(self, width, height, title):
         super().__init__(width, height, title)
         arcade.set_background_color(arcade.color.WHITE)
-        self.controller = menu_controller
+        self.controller = content.get_object('controller.menu')
         self.controller.set_root(self)
         self.player = default_player
         self.set_update_rate(1 / 60)
@@ -36,8 +36,11 @@ class App(arcade.Window):
         self.controller.update()
 
 
+
 """global variables"""
-default_timeline = NodeTimeLine()
-menu_controller = MenuController(default_timeline)
+default_timeline = NodeTimeLine('test regime')
+menu_controller = MenuController('menu')
+content.add_object('timeline', default_timeline)
+content.add_object('controller', menu_controller)
 app = App(1920, 1080, 'Arcade')
 arcade.run()
