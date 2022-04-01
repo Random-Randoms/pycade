@@ -199,7 +199,7 @@ class ShootingWeapon(Weapon):
         # time
         self.time_since_last_shoot = 0
 
-        # sounds
+        # sound_data
         self.shoot_sound = shoot_sound
         self.error_sound = error_sound
 
@@ -451,7 +451,7 @@ class Ship:
         # setup
         self.set_ship()
 
-        # sounds
+        # sound_data
         self.damage_sound = damage_sound
 
         # inventory

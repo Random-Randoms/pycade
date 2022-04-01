@@ -1,0 +1,2 @@
+explosion
+content/sounds/sfx_exp_medium7.wav

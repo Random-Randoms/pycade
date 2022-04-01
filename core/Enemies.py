@@ -66,7 +66,7 @@ class Asteroid(RammingEnemy):
     def __init__(self, name, filename, scale, speed, damage, destruction_sound, destruction_textures=None):
         super().__init__(name, filename, scale, speed, damage, enemy_type='asteroid', destruction_textures=destruction_textures)
         self.move_by_flight = True
-        self.destruction_sound = AudioSegment.from_wav('sounds/sfx_exp_shortest_soft7.wav')
+        self.destruction_sound = destruction_sound
 
     def on_spawn(self):
         random_rotation(self)
@@ -81,7 +81,7 @@ class Asteroid(RammingEnemy):
         spawn_scrap(self.flight, self.center_x, self.center_y)
         spawn_scrap(self.flight, self.center_x, self.center_y)
         spawn_scrap(self.flight, self.center_x, self.center_y)
-        #play(self.destruction_sound)
+        # arcade.play_sound(arcade.load_sound(self.destruction_sound))
 
     def collide(self, _object):
         if _object.type in ['missile', 'bullet', 'explosion']:

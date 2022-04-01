@@ -55,7 +55,7 @@ class MainMenu(Scene):
     def __init__(self, width, height):
         super(MainMenu, self).__init__(width, height)
         self.logo = GUIIdle('sprites/Logo.png')
-        self.menu_sound = arcade.load_sound('sounds/sfx_menu_move4.wav')
+        self.menu_sound = arcade.load_sound('sound_data/sfx_menu_move4.wav')
         self.start_game = GUIText('sprites/gui/text_window_dark.png', 'Enter: new game', (255, 255, 255),
                                   'fonts/editundo.ttf', 50)
         self.set_gui()
@@ -346,8 +346,8 @@ class Flight(GameScene):
 class Station(GameScene):
     def __init__(self, player, width, height, facilities):
         super(Station, self).__init__(player, width, height)
-        # sounds
-        self.menu_sound = arcade.load_sound('sounds/sfx_menu_move4.wav')
+        # sound_data
+        self.menu_sound = arcade.load_sound('sound_data/sfx_menu_move4.wav')
 
         # facilities
         self.facilities = facilities
@@ -427,9 +427,9 @@ class StationFacility(GameScene):
         super(StationFacility, self).__init__(width, height, player)
         self.name = name
         self.level = level
-        self.menu_sound = arcade.load_sound('sounds/sfx_menu_move4.wav')
-        self.buy_sound = arcade.load_sound('sounds/sfx_sounds_powerup16.wav')
-        self.error_sound = arcade.load_sound('sounds/sfx_sounds_error8.wav')
+        self.menu_sound = arcade.load_sound('sound_data/sfx_menu_move4.wav')
+        self.buy_sound = arcade.load_sound('sound_data/sfx_sounds_powerup16.wav')
+        self.error_sound = arcade.load_sound('sound_data/sfx_sounds_error8.wav')
         self.gui_left_1 = GUIBar('sprites/gui/station_gui/left_1/st_gui_left_1.png', 6, 3, 18)
         self.gui_left_2 = GUIBar('sprites/gui/station_gui/left_2/st_gui_left_2.png', 6, 3, 18)
         self.gui_left_3 = GUIBar('sprites/gui/station_gui/left_3/st_gui_left_3.png', 6, 3, 18)

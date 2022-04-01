@@ -1,0 +1,8 @@
+asteroid
+asteroid
+picture.asteroid
+1.0
+0
+10
+sound.aster_dest
+animation.aster_dest

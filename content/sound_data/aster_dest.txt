@@ -1,0 +1,2 @@
+aster_dest
+content/sounds/sfx_exp_shortest_soft7.wav

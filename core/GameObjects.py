@@ -87,7 +87,7 @@ class GameObject(AnimatedSprite):
         self.angle_speed = speed
 
     def rotate_by_speed(self):
-        self.angle = math.atan(self.speed_y / self.speed_x) *180 / math.pi
+        self.angle = math.atan(self.speed_y / self.speed_x) * 180 / math.pi
         if self.speed_y < 0:
             self.angle += 180
 
@@ -165,4 +165,3 @@ def spawn_angle(_object, flight, x, y, angle):
     new_object = spawn(_object, flight, x, y)
     new_object.set_angle(angle)
     new_object.fly_by_angle(new_object.speed)
-

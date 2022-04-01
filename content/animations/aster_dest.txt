@@ -1,0 +1,6 @@
+aster_dest
+picture.aster_dest
+1
+5
+5
+1.0

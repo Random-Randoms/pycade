@@ -1,0 +1,2 @@
+asteroid
+content/pics/asteroid_1.png

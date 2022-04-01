@@ -1,0 +1,6 @@
+explosion
+picture.explosion_spritesheet
+3
+3
+8
+1.0

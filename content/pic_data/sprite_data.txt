@@ -1,0 +1,2 @@
+aster_dest
+content/pics/spritesheet (6).png

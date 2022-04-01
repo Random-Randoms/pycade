@@ -1,0 +1,5 @@
+explosion
+picture.explosion
+1.0
+sound.explosion
+animation.explosion

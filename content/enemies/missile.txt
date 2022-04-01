@@ -1,0 +1,7 @@
+missile
+missile
+picture.missile
+1.0
+750
+10
+explosion.explosion

@@ -19,11 +19,11 @@ class Collectable(GameObject):
         random_speed(self, 50)
 
     def player_collide(self):
-        self.flight.player.add_scraps(self.amount)
+        self.flight.player.add_scraps(random.randint(0, self.amount))
         arcade.play_sound(arcade.load_sound(self.sound))
         self.complete_destroy()
 
 
 class SmallScrap(Collectable):
     def __init__(self, name, filename):
-        super(SmallScrap, self).__init__(name, filename, random.randint(0, 10), 'sounds/scrap_collect.wav')
+        super(SmallScrap, self).__init__(name, filename, 10, 'sound_data/scrap_collect.wav')
