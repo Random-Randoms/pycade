@@ -1,0 +1,12 @@
+upg
+batteries_capacity
+capacity
+variants:
+    100
+    200
+    300
+prices:
+    100
+    150
+icons:
+end

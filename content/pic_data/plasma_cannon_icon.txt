@@ -1,0 +1,2 @@
+plasma_cannon
+content/icons/icon_plasma_gun.png

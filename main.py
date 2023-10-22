@@ -1,5 +1,5 @@
 import arcade
-from content.content import default_player, content
+from content.content import content
 from core.Control import MenuController, NodeTimeLine
 
 
@@ -9,8 +9,8 @@ class App(arcade.Window):
         arcade.set_background_color(arcade.color.WHITE)
         self.controller = content.get_object('controller.menu')
         self.controller.set_root(self)
-        self.player = default_player
-        self.set_update_rate(1 / 60)
+        self.player = content.get_object('ship.pacific')
+        self.set_update_rate(1 / 100)
         self.set_vsync(False)
         self.scene = None
         self.set_fullscreen(True)

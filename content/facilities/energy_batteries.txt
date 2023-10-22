@@ -1,0 +1,4 @@
+energy_storage
+energy batteries
+picture.batteries
+value.batteries_capacity

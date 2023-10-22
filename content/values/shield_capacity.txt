@@ -1,0 +1,14 @@
+upg
+shield_capacity
+capacity
+variants:
+    50
+    75
+    100
+    150
+prices:
+    100
+    100
+    150
+icons:
+end

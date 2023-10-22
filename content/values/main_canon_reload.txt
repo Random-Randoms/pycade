@@ -1,0 +1,14 @@
+upg
+main_cannon_reload
+reload
+variants:
+    1.0
+    0.75
+    0.5
+    0.25
+prices:
+    100
+    100
+    150
+icons:
+end

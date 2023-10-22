@@ -1,0 +1,104 @@
+graph:{
+  title:"packages_arcade"
+  layoutalgorithm:dfs
+  late_edge_labels:yes
+  port_sharing:no
+  manhattan_edges:yes
+  node: {title:"core"  label:"\fbcore\fn"
+  shape:box
+  }
+  node: {title:"core.Collectables"  label:"\fbcore.Collectables\fn"
+  shape:box
+  }
+  node: {title:"core.Control"  label:"\fbcore.Control\fn"
+  shape:box
+  }
+  node: {title:"core.Enemies"  label:"\fbcore.Enemies\fn"
+  shape:box
+  }
+  node: {title:"core.Explosion"  label:"\fbcore.Explosion\fn"
+  shape:box
+  }
+  node: {title:"core.GUI"  label:"\fbcore.GUI\fn"
+  shape:box
+  }
+  node: {title:"core.GameObjects"  label:"\fbcore.GameObjects\fn"
+  shape:box
+  }
+  node: {title:"core.MiscObjects"  label:"\fbcore.MiscObjects\fn"
+  shape:box
+  }
+  node: {title:"core.Scenes"  label:"\fbcore.Scenes\fn"
+  shape:box
+  }
+  node: {title:"core.Ship"  label:"\fbcore.Ship\fn"
+  shape:box
+  }
+  node: {title:"core.Utilities"  label:"\fbcore.Utilities\fn"
+  shape:box
+  }
+  edge: {sourcename:"core.Collectables" targetname:"core.GameObjects"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:0
+  }
+  edge: {sourcename:"core.Control" targetname:"core.Enemies"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:0
+  }
+  edge: {sourcename:"core.Control" targetname:"core.Scenes"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:0
+  }
+  edge: {sourcename:"core.Enemies" targetname:"core.Collectables"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:0
+  }
+  edge: {sourcename:"core.Enemies" targetname:"core.GameObjects"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:0
+  }
+  edge: {sourcename:"core.Enemies" targetname:"core.Utilities"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:0
+  }
+  edge: {sourcename:"core.Explosion" targetname:"core.GameObjects"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:0
+  }
+  edge: {sourcename:"core.Explosion" targetname:"core.Utilities"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:0
+  }
+  edge: {sourcename:"core.GUI" targetname:"core.Utilities"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:0
+  }
+  edge: {sourcename:"core.GameObjects" targetname:"core.Utilities"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:0
+  }
+  edge: {sourcename:"core.MiscObjects" targetname:"core.GameObjects"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:0
+  }
+  edge: {sourcename:"core.Scenes" targetname:"core.GUI"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:0
+  }
+  edge: {sourcename:"core.Scenes" targetname:"core.Ship"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:0
+  }
+  edge: {sourcename:"core.Scenes" targetname:"core.Utilities"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:0
+  }
+  edge: {sourcename:"core.Ship" targetname:"core.GameObjects"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:0
+  }
+  edge: {sourcename:"core.Ship" targetname:"core.Utilities"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:0
+  }
+}

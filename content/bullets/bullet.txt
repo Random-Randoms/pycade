@@ -1,0 +1,6 @@
+basic
+bullet
+picture.bullet
+1.0
+750
+1

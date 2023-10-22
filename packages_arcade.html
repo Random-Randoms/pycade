@@ -1,0 +1,48 @@
+<html>
+  <body>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+      <div class="mermaid">
+    
+        classDiagram
+          class core {
+          }
+          class Collectables {
+          }
+          class Control {
+          }
+          class Enemies {
+          }
+          class Explosion {
+          }
+          class GUI {
+          }
+          class GameObjects {
+          }
+          class MiscObjects {
+          }
+          class Scenes {
+          }
+          class Ship {
+          }
+          class Utilities {
+          }
+          Collectables --> GameObjects
+          Control --> Enemies
+          Control --> Scenes
+          Enemies --> Collectables
+          Enemies --> GameObjects
+          Enemies --> Utilities
+          Explosion --> GameObjects
+          Explosion --> Utilities
+          GUI --> Utilities
+          GameObjects --> Utilities
+          MiscObjects --> GameObjects
+          Scenes --> GUI
+          Scenes --> Ship
+          Scenes --> Utilities
+          Ship --> GameObjects
+          Ship --> Utilities
+  
+       </div>
+  </body>
+</html>

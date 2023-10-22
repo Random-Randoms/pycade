@@ -1,0 +1,9 @@
+shooting_weapon
+plasma cannon
+picture.plasma_cannon
+bullet.cluster
+value.zero
+value.plasma_shoot_energy
+key.W
+sound.explosion
+sound.explosion

@@ -38,7 +38,7 @@ class UpgradableValue(Value):
         super(UpgradableValue, self).__init__(name)
         self._upgradable = True
         self.variants = variants
-        if icons is None:
+        if icons is None or icons == []:
             icons = [arcade.Texture('')] * len(variants)
         self._current_icon = icons[0]
         self._icons = icons

@@ -1,0 +1,2 @@
+nuc_generator
+content/icons/generator_icon.png

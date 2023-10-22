@@ -1,0 +1,12 @@
+upg
+plasma_shoot_energy
+shoot energy
+variants:
+    25
+    20
+    15
+prices:
+    100
+    200
+icons:
+end

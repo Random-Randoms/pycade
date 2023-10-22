@@ -57,6 +57,7 @@ class RammingEnemy(Enemy):
         self.destruction_timer.update(delta_time)
         if self.center_y < -50:
             self.complete_destroy()
+            print('enemy_destroyed')
 
     def set_angle(self, angle):
         self.angle = angle
@@ -128,6 +129,7 @@ class TimeSpawner:
 
     def spawn_enemy(self):
         spawn(self.object, self.flight, random.randint(self.left, self.right), self.top + 50)
+        #print('enemy_spawned')
 
     def update(self, delta_time):
         self.spawn_timer.update(delta_time)

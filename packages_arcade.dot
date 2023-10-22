@@ -1,0 +1,31 @@
+digraph "packages_arcade" {
+rankdir=BT
+charset="utf-8"
+"core" [color="black", label="core", shape="box", style="solid"];
+"core.Collectables" [color="black", label="core.Collectables", shape="box", style="solid"];
+"core.Control" [color="black", label="core.Control", shape="box", style="solid"];
+"core.Enemies" [color="black", label="core.Enemies", shape="box", style="solid"];
+"core.Explosion" [color="black", label="core.Explosion", shape="box", style="solid"];
+"core.GUI" [color="black", label="core.GUI", shape="box", style="solid"];
+"core.GameObjects" [color="black", label="core.GameObjects", shape="box", style="solid"];
+"core.MiscObjects" [color="black", label="core.MiscObjects", shape="box", style="solid"];
+"core.Scenes" [color="black", label="core.Scenes", shape="box", style="solid"];
+"core.Ship" [color="black", label="core.Ship", shape="box", style="solid"];
+"core.Utilities" [color="black", label="core.Utilities", shape="box", style="solid"];
+"core.Collectables" -> "core.GameObjects" [arrowhead="open", arrowtail="none"];
+"core.Control" -> "core.Enemies" [arrowhead="open", arrowtail="none"];
+"core.Control" -> "core.Scenes" [arrowhead="open", arrowtail="none"];
+"core.Enemies" -> "core.Collectables" [arrowhead="open", arrowtail="none"];
+"core.Enemies" -> "core.GameObjects" [arrowhead="open", arrowtail="none"];
+"core.Enemies" -> "core.Utilities" [arrowhead="open", arrowtail="none"];
+"core.Explosion" -> "core.GameObjects" [arrowhead="open", arrowtail="none"];
+"core.Explosion" -> "core.Utilities" [arrowhead="open", arrowtail="none"];
+"core.GUI" -> "core.Utilities" [arrowhead="open", arrowtail="none"];
+"core.GameObjects" -> "core.Utilities" [arrowhead="open", arrowtail="none"];
+"core.MiscObjects" -> "core.GameObjects" [arrowhead="open", arrowtail="none"];
+"core.Scenes" -> "core.GUI" [arrowhead="open", arrowtail="none"];
+"core.Scenes" -> "core.Ship" [arrowhead="open", arrowtail="none"];
+"core.Scenes" -> "core.Utilities" [arrowhead="open", arrowtail="none"];
+"core.Ship" -> "core.GameObjects" [arrowhead="open", arrowtail="none"];
+"core.Ship" -> "core.Utilities" [arrowhead="open", arrowtail="none"];
+}

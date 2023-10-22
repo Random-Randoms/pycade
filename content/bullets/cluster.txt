@@ -1,0 +1,8 @@
+cluster
+cluster
+picture.super_bullet
+1.0
+500
+1
+bullet.bullet
+sound.explosion

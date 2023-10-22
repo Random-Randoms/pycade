@@ -117,7 +117,7 @@ class Loss(GameScene):
 
     def on_draw(self):
         arcade.start_render()
-        arcade.draw_text('you lost lost lmao', 500, 500, (0, 0, 0))
+        arcade.draw_text('You lost. Tap enter to return to menu', 500, 500, (0, 0, 0), 50)
         self.draw_fps()
 
 
@@ -427,9 +427,9 @@ class StationFacility(GameScene):
         super(StationFacility, self).__init__(width, height, player)
         self.name = name
         self.level = level
-        self.menu_sound = arcade.load_sound('sound_data/sfx_menu_move4.wav')
-        self.buy_sound = arcade.load_sound('sound_data/sfx_sounds_powerup16.wav')
-        self.error_sound = arcade.load_sound('sound_data/sfx_sounds_error8.wav')
+        self.menu_sound = arcade.load_sound('content/sounds/sfx_menu_move4.wav')
+        self.buy_sound = arcade.load_sound('content/sounds/sfx_sounds_powerup16.wav')
+        self.error_sound = arcade.load_sound('content/sounds/sfx_sounds_error8.wav')
         self.gui_left_1 = GUIBar('sprites/gui/station_gui/left_1/st_gui_left_1.png', 6, 3, 18)
         self.gui_left_2 = GUIBar('sprites/gui/station_gui/left_2/st_gui_left_2.png', 6, 3, 18)
         self.gui_left_3 = GUIBar('sprites/gui/station_gui/left_3/st_gui_left_3.png', 6, 3, 18)

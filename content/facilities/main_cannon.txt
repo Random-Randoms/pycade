@@ -1,0 +1,9 @@
+shooting_weapon
+main cannon
+picture.cannon_icon
+bullet.bullet
+value.main_cannon_reload
+value.zero
+key.space
+sound.explosion
+sound.explosion

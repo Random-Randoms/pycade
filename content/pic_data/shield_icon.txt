@@ -1,0 +1,2 @@
+shield
+content/icons/icon_shield.png

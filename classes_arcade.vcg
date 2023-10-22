@@ -1,0 +1,498 @@
+graph:{
+  title:"classes_arcade"
+  layoutalgorithm:dfs
+  late_edge_labels:yes
+  port_sharing:no
+  manhattan_edges:yes
+  node: {title:"core.GameObjects.AnimatedSprite"  label:"\fbAnimatedSprite\fn\n\f____________________\n\f08animation_timer\n\f08cur_index : int\n\f08cur_state : list\n\f08frequency : float\n\f08states : dict\n\f____________________\n\f10add_state_fnames()\n\f10add_state_textures()\n\f10set_state()\n\f10upd()\n\f10update_texture()"
+  shape:box
+  }
+  node: {title:"core.Enemies.Asteroid"  label:"\fbAsteroid\fn\n\f_______________________\n\f08destruction_sound\n\f08move_by_flight : bool\n\f_______________________\n\f10collide()\n\f10on_destroy()\n\f10on_spawn()\n\f10player_collide()"
+  shape:box
+  }
+  node: {title:"core.Ship.Bullet"  label:"\fbBullet\fn\n\f______________________\n\f08center_x\n\f08center_y\n\f08collisions : int\n\f08max_collisions : int\n\f08speed\n\f08speed_x : int\n\f08speed_y\n\f08type : str\n\f______________________\n\f10add_speed()\n\f10collide()\n\f10complete_destroy()\n\f10copy()\n\f10on_destroy()\n\f10set_velocity()\n\f10upd()"
+  shape:box
+  }
+  node: {title:"core.Scenes.ChooseNewGame"  label:"\fbChooseNewGame\fn\n\f_______________\n\f08player\n\f08state : str\n\f08test_regime\n\f_______________\n\f10draw_gui()\n\f10on_draw()\n\f10on_key_press()\n\f10set_gui()"
+  shape:box
+  }
+  node: {title:"core.Ship.ClusterBullet"  label:"\fbClusterBullet\fn\n\f_______________\n\f08shard\n\f08sound\n\f_______________\n\f10on_destroy()"
+  shape:box
+  }
+  node: {title:"core.Collectables.Collectable"  label:"\fbCollectable\fn\n\f_______________________\n\f08amount\n\f08move_by_flight : bool\n\f08sound\n\f08type : str\n\f_______________________\n\f10on_spawn()\n\f10player_collide()"
+  shape:box
+  }
+  node: {title:"core.Ship.ConstantValue"  label:"\fbConstantValue\fn\n\f_______________"
+  shape:box
+  }
+  node: {title:"core.Utilities.Controls"  label:"\fbControls\fn\n\f__________\n\f08left\n\f08right\n\f08shoot\n\f__________"
+  shape:box
+  }
+  node: {title:"core.Enemies.Enemy"  label:"\fbEnemy\fn\n\f___________________\n\f08collidable : bool\n\f08type\n\f___________________"
+  shape:box
+  }
+  node: {title:"core.Ship.EnergyStorage"  label:"\fbEnergyStorage\fn\n\f____________________\n\f08energy : int\n\f08max_energy\n\f08upgradables : list\n\f____________________\n\f10add()"
+  shape:box
+  }
+  node: {title:"core.Scenes.Exchanger"  label:"\fbExchanger\fn\n\f______________\n\f08gui_1\n\f08gui_2\n\f08gui_3\n\f08gui_welcome\n\f______________\n\f10draw_gui()\n\f10on_draw()\n\f10on_key_press()\n\f10set_gui()"
+  shape:box
+  }
+  node: {title:"core.Explosion.Explosion"  label:"\fbExplosion\fn\n\f_______________________\n\f08destruction_timer\n\f08explosion_sound\n\f08explosion_textures\n\f08first_upd : bool\n\f08move_by_flight : bool\n\f08type : str\n\f_______________________\n\f10upd()"
+  shape:box
+  }
+  node: {title:"core.Ship.ExplosiveBullet"  label:"\fbExplosiveBullet\fn\n\f_________________\n\f08explosion\n\f_________________\n\f10on_destroy()"
+  shape:box
+  }
+  node: {title:"core.Scenes.Flight"  label:"\fbFlight\fn\n\f____________________________\n\f08acc_timer\n\f08acceleration\n\f08background\n\f08base_speed\n\f08bullets : SpriteList\n\f08controls : NoneType\n\f08cur_len : int\n\f08enemies : SpriteList\n\f08enemy_spawners\n\f08energy_bar\n\f08explosions : SpriteList\n\f08facility_info : list\n\f08health_bar\n\f08left_border\n\f08left_gui\n\f08left_spawn\n\f08length\n\f08mid_gui\n\f08missiles : SpriteList\n\f08move : SpriteList\n\f08objects : SpriteList\n\f08progress_bar\n\f08right_border\n\f08right_gui\n\f08right_spawn\n\f08showable_facilities : list\n\f08speed\n\f08state : str\n\f____________________________\n\f10accelerate()\n\f10add_object()\n\f10check_collision_objects()\n\f10check_collision_player()\n\f10controls_setup()\n\f10gui_draw()\n\f10gui_draw_bg()\n\f10gui_setup()\n\f10gui_update()\n\f10move_objects()\n\f10on_draw()\n\f10on_update()\n\f10player_setup()\n\f10spawners_setup()\n\f10sprite_setup()\n\f10update_objects()\n\f10update_spawn_timers()"
+  shape:box
+  }
+  node: {title:"core.GUI.GUIBar"  label:"\fbGUIBar\fn\n\f_________________\n\f08amount\n\f08textures : list\n\f_________________\n\f10upd()"
+  shape:box
+  }
+  node: {title:"core.GUI.GUIFacilityInfo"  label:"\fbGUIFacilityInfo\fn\n\f___________________________\n\f08bar_1\n\f08bar_2\n\f08bar_3\n\f08bottom_color : tuple\n\f08bottom_text_content : str\n\f08icon_sprite : Sprite\n\f08rel_value_1 : int\n\f08rel_value_2 : int\n\f08rel_value_3 : int\n\f08top_text_content : str\n\f___________________________\n\f10draw()\n\f10set_content()\n\f10set_position()\n\f10update()"
+  shape:box
+  }
+  node: {title:"core.GUI.GUIIdle"  label:"\fbGUIIdle\fn\n\f_________"
+  shape:box
+  }
+  node: {title:"core.GUI.GUIMovable"  label:"\fbGUIMovable\fn\n\f____________\n\f08center_y\n\f08inv : bool\n\f08speed\n\f____________\n\f10move()"
+  shape:box
+  }
+  node: {title:"core.GUI.GUIText"  label:"\fbGUIText\fn\n\f____________________________\n\f08font\n\f08font_size\n\f08text\n\f08text_center_x : int, float\n\f08text_center_y : float, int\n\f08text_color\n\f____________________________\n\f10draw()\n\f10draw_text()\n\f10set_position()"
+  shape:box
+  }
+  node: {title:"core.GUI.GUITextUpgrade"  label:"\fbGUITextUpgrade\fn\n\f_________________\n\f08icon_1 : Sprite\n\f08icon_2 : Sprite\n\f08text_center_x\n\f_________________\n\f10draw()\n\f10draw_icons()\n\f10set_position()"
+  shape:box
+  }
+  node: {title:"core.GameObjects.GameObject"  label:"\fbGameObject\fn\n\f_______________________\n\f08angle : float\n\f08angle_speed : int\n\f08center_x\n\f08center_y\n\f08collidable : bool\n\f08flight : NoneType\n\f08fname\n\f08force_x : int\n\f08force_y : int\n\f08move_by_flight : bool\n\f08name\n\f08speed_x : int\n\f08speed_y : int\n\f08type : str\n\f_______________________\n\f10add_force()\n\f10collide()\n\f10complete_destroy()\n\f10copy()\n\f10fly_by_angle()\n\f10is_collidable()\n\f10move()\n\f10on_destroy()\n\f10on_spawn()\n\f10player_collide()\n\f10rotate_by_speed()\n\f10set_angle()\n\f10set_angle_speed()\n\f10set_flight()\n\f10set_speed()\n\f10upd()"
+  shape:box
+  }
+  node: {title:"core.Scenes.GameScene"  label:"\fbGameScene\fn\n\f________________\n\f08player\n\f________________\n\f10on_key_press()\n\f10on_key_release()"
+  shape:box
+  }
+  node: {title:"core.Ship.Generator"  label:"\fbGenerator\fn\n\f___________________________\n\f08energy_prod\n\f08status : str\n\f08status_positiveness : int\n\f08upgradables : list\n\f___________________________\n\f10update()"
+  shape:box
+  }
+  node: {title:"core.Scenes.Loss"  label:"\fbLoss\fn\n\f______________\n\f08state : str\n\f______________\n\f10on_draw()\n\f10on_key_press()"
+  shape:box
+  }
+  node: {title:"core.MiscObjects.MagneticDisc"  label:"\fbMagneticDisc\fn\n\f__________________\n\f08center_x\n\f08center_y\n\f08force\n\f08owner : NoneType\n\f08scale\n\f__________________\n\f10set_force()\n\f10set_owner()\n\f10upd()"
+  shape:box
+  }
+  node: {title:"core.Scenes.MainMenu"  label:"\fbMainMenu\fn\n\f______________________________\n\f08logo\n\f08menu_sound : NoneType, Sound\n\f08start_game\n\f08state : str\n\f______________________________\n\f10draw_gui()\n\f10on_draw()\n\f10on_key_press()\n\f10set_gui()"
+  shape:box
+  }
+  node: {title:"core.Scenes.MaintenanceHangar"  label:"\fbMaintenanceHangar\fn\n\f___________________\n\f08gui_energy\n\f08gui_hp\n\f08gui_shields\n\f08gui_welcome\n\f___________________\n\f10draw_gui()\n\f10on_draw()\n\f10on_key_press()\n\f10set_gui()"
+  shape:box
+  }
+  node: {title:"core.Control.MenuController"  label:"\fbMenuController\fn\n\f_______________________\n\f08base_scene : NoneType\n\f08content : NoneType\n\f08in_game : bool\n\f08name\n\f08root : NoneType\n\f08timeline : NoneType\n\f08timelines : NoneType\n\f_______________________\n\f10set_base_scene()\n\f10set_content()\n\f10set_root()\n\f10start()\n\f10update()"
+  shape:box
+  }
+  node: {title:"core.Enemies.Missile"  label:"\fbMissile\fn\n\f________________\n\f08explosion\n\f________________\n\f10collide()\n\f10on_destroy()\n\f10on_spawn()\n\f10player_collide()"
+  shape:box
+  }
+  node: {title:"core.Control.NodeTimeLine"  label:"\fbNodeTimeLine\fn\n\f________________________\n\f08cur_station : NoneType\n\f08game_ended : bool\n\f________________________\n\f10start()\n\f10update()"
+  shape:box
+  }
+  node: {title:"core.Utilities.ParamTimer"  label:"\fbParamTimer\fn\n\f______________\n\f08param\n\f______________\n\f10trigger_func()"
+  shape:box
+  }
+  node: {title:"core.Enemies.RammingEnemy"  label:"\fbRammingEnemy\fn\n\f_______________________________________\n\f08angle\n\f08angle_speed : int\n\f08collidable : bool\n\f08damage\n\f08destruction_textures : NoneType, list\n\f08destruction_timer\n\f08flying_textures : list, NoneType\n\f08speed\n\f_______________________________________\n\f10is_collidable()\n\f10on_destroy()\n\f10set_angle()\n\f10set_angle_speed()\n\f10upd()"
+  shape:box
+  }
+  node: {title:"core.Scenes.Scene"  label:"\fbScene\fn\n\f___________________\n\f08delta_time : int\n\f08fps_counter : int\n\f08height\n\f08state : str\n\f08width\n\f___________________\n\f10clear_state()\n\f10draw_fps()\n\f10on_draw()\n\f10on_key_press()\n\f10on_key_release()\n\f10on_update()"
+  shape:box
+  }
+  node: {title:"core.Ship.ScrapMagnet"  label:"\fbScrapMagnet\fn\n\f______________\n\f08disk\n\f08force\n\f08time\n\f______________\n\f10on_key_press()"
+  shape:box
+  }
+  node: {title:"core.Ship.ShieldCapacitor"  label:"\fbShieldCapacitor\fn\n\f___________________________\n\f08cur_shield : int\n\f08max_shield\n\f08status : str\n\f08status_positiveness : int\n\f___________________________\n\f10charge()\n\f10damage()\n\f10info()\n\f10set_info()"
+  shape:box
+  }
+  node: {title:"core.Ship.Ship"  label:"\fbShip\fn\n\f______________________\n\f08credits : int\n\f08current_speed : int\n\f08damage_sound\n\f08energy_storage\n\f08facilities\n\f08flight : NoneType\n\f08hp\n\f08main_weapon\n\f08max_hp\n\f08name\n\f08scraps : int\n\f08shield_capacitor\n\f08ship_sprite\n\f08sprites : SpriteList\n\f08total_force : int\n\f______________________\n\f10add_credits()\n\f10add_force()\n\f10add_scraps()\n\f10collide()\n\f10damage()\n\f10draw()\n\f10energy()\n\f10get_center_x()\n\f10get_center_y()\n\f10give_energy()\n\f10max_energy()\n\f10move()\n\f10on_key_press()\n\f10on_key_release()\n\f10recharge()\n\f10recharge_shields()\n\f10repair()\n\f10result_force()\n\f10set_flight()\n\f10set_ship()\n\f10spawn()\n\f10update()"
+  shape:box
+  }
+  node: {title:"core.Ship.ShipFacility"  label:"\fbShipFacility\fn\n\f___________________________\n\f08flight : NoneType\n\f08icon : str\n\f08name : str\n\f08ship : NoneType\n\f08showable : bool\n\f08status : str\n\f08status_positiveness : int\n\f08upgradables : list\n\f___________________________\n\f10info()\n\f10is_showable()\n\f10on_key_press()\n\f10on_key_release()\n\f10set_flight()\n\f10set_ship()\n\f10update()"
+  shape:box
+  }
+  node: {title:"core.Ship.ShootingWeapon"  label:"\fbShootingWeapon\fn\n\f_____________________________\n\f08bullet_sprite\n\f08error_sound\n\f08key\n\f08shoot_sound\n\f08time_since_last_shoot : int\n\f_____________________________\n\f10info()\n\f10on_key_press()\n\f10reload_time_left()\n\f10shoot()\n\f10update()"
+  shape:box
+  }
+  node: {title:"core.Ship.SideEngines"  label:"\fbSideEngines\fn\n\f______________________\n\f08force\n\f08left_pressed : bool\n\f08right_pressed : bool\n\f08showable : bool\n\f______________________\n\f10on_key_press()\n\f10on_key_release()\n\f10update()"
+  shape:box
+  }
+  node: {title:"core.Collectables.SmallScrap"  label:"\fbSmallScrap\fn\n\f____________"
+  shape:box
+  }
+  node: {title:"core.Ship.SpaceFoldStabilizer"  label:"\fbSpaceFoldStabilizer\fn\n\f_________________________\n\f08coef\n\f08left\n\f08left_sprite : NoneType\n\f08length\n\f08max_speed\n\f08right\n\f08right_sprite : NoneType\n\f08showable : bool\n\f08width\n\f_________________________\n\f10reflect()\n\f10set_flight()\n\f10update()"
+  shape:box
+  }
+  node: {title:"core.Scenes.Station"  label:"\fbStation\fn\n\f______________________________\n\f08delta_time : float\n\f08facilities\n\f08gui_facility : list\n\f08gui_left_1\n\f08gui_left_2\n\f08gui_left_3\n\f08gui_left_4\n\f08gui_welcome\n\f08menu_sound : Sound, NoneType\n\f08state : str\n\f______________________________\n\f10draw_gui()\n\f10on_draw()\n\f10on_key_press()\n\f10on_update()\n\f10set_gui()\n\f10set_up_player()\n\f10update_gui()"
+  shape:box
+  }
+  node: {title:"core.Scenes.StationFacility"  label:"\fbStationFacility\fn\n\f_______________________________\n\f08buy_sound : Sound, NoneType\n\f08error_sound : Sound, NoneType\n\f08gui_left_1\n\f08gui_left_2\n\f08gui_left_3\n\f08gui_left_4\n\f08level\n\f08menu_sound : Sound, NoneType\n\f08name\n\f08state : str\n\f_______________________________\n\f10draw_gui()\n\f10on_draw()\n\f10on_key_press()\n\f10on_update()\n\f10set_gui()\n\f10update_gui()"
+  shape:box
+  }
+  node: {title:"core.Control.TimeLine"  label:"\fbTimeLine\fn\n\f____________________\n\f08content : NoneType\n\f08game_ended : bool\n\f08name\n\f08root : NoneType\n\f____________________\n\f10set_content()\n\f10set_root()\n\f10start()\n\f10update()"
+  shape:box
+  }
+  node: {title:"core.Enemies.TimeSpawner"  label:"\fbTimeSpawner\fn\n\f___________________\n\f08flight : NoneType\n\f08frequency\n\f08left : int\n\f08object\n\f08right : int\n\f08spawn_timer\n\f08top : int\n\f___________________\n\f10set_flight()\n\f10spawn_enemy()\n\f10update()"
+  shape:box
+  }
+  node: {title:"core.Utilities.Timer"  label:"\fbTimer\fn\n\f______________________\n\f08current_time : int\n\f08func\n\f08is_running : bool\n\f08iterations : int\n\f08max_iterations : int\n\f08trigger_time\n\f______________________\n\f10refresh()\n\f10start()\n\f10stop()\n\f10trigger_func()\n\f10update()"
+  shape:box
+  }
+  node: {title:"core.Ship.UpgradableValue"  label:"\fbUpgradableValue\fn\n\f_________________\n\f08level : int\n\f08prices\n\f08variants\n\f_________________\n\f10get_icon()\n\f10next_value()\n\f10upgrade()\n\f10upgrade_cost()\n\f10upgrade_info()"
+  shape:box
+  }
+  node: {title:"core.Scenes.UpgradeHangar"  label:"\fbUpgradeHangar\fn\n\f_________________________\n\f08gui_options : list\n\f08gui_options_text : list\n\f08gui_welcome\n\f08text_timers : list\n\f08upgradables : list\n\f08upgrades : list\n\f_________________________\n\f10draw_gui()\n\f10on_draw()\n\f10on_key_press()\n\f10on_update()\n\f10set_gui()\n\f10set_upgradables()\n\f10text_reset()\n\f10update_gui()"
+  shape:box
+  }
+  node: {title:"core.Ship.Value"  label:"\fbValue\fn\n\f_____________________\n\f08facility : NoneType\n\f08name : str\n\f_____________________\n\f10get_facility()\n\f10is_upgradable()\n\f10set_facility()\n\f10value()"
+  shape:box
+  }
+  node: {title:"core.Ship.Weapon"  label:"\fbWeapon\fn\n\f_____________\n\f08energy_cost\n\f08reload_time\n\f_____________"
+  shape:box
+  }
+  edge: {sourcename:"core.Collectables.Collectable" targetname:"core.GameObjects.GameObject"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:10
+  }
+  edge: {sourcename:"core.Collectables.SmallScrap" targetname:"core.Collectables.Collectable"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:10
+  }
+  edge: {sourcename:"core.Control.NodeTimeLine" targetname:"core.Control.TimeLine"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:10
+  }
+  edge: {sourcename:"core.Enemies.Asteroid" targetname:"core.Enemies.RammingEnemy"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:10
+  }
+  edge: {sourcename:"core.Enemies.Enemy" targetname:"core.GameObjects.GameObject"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:10
+  }
+  edge: {sourcename:"core.Enemies.Missile" targetname:"core.Enemies.RammingEnemy"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:10
+  }
+  edge: {sourcename:"core.Enemies.RammingEnemy" targetname:"core.Enemies.Enemy"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:10
+  }
+  edge: {sourcename:"core.Explosion.Explosion" targetname:"core.GameObjects.GameObject"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:10
+  }
+  edge: {sourcename:"core.GUI.GUITextUpgrade" targetname:"core.GUI.GUIText"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:10
+  }
+  edge: {sourcename:"core.GameObjects.GameObject" targetname:"core.GameObjects.AnimatedSprite"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:10
+  }
+  edge: {sourcename:"core.Scenes.ChooseNewGame" targetname:"core.Scenes.Scene"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:10
+  }
+  edge: {sourcename:"core.Scenes.Exchanger" targetname:"core.Scenes.StationFacility"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:10
+  }
+  edge: {sourcename:"core.Scenes.Flight" targetname:"core.Scenes.GameScene"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:10
+  }
+  edge: {sourcename:"core.Scenes.GameScene" targetname:"core.Scenes.Scene"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:10
+  }
+  edge: {sourcename:"core.Scenes.Loss" targetname:"core.Scenes.GameScene"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:10
+  }
+  edge: {sourcename:"core.Scenes.MainMenu" targetname:"core.Scenes.Scene"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:10
+  }
+  edge: {sourcename:"core.Scenes.MaintenanceHangar" targetname:"core.Scenes.StationFacility"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:10
+  }
+  edge: {sourcename:"core.Scenes.Station" targetname:"core.Scenes.GameScene"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:10
+  }
+  edge: {sourcename:"core.Scenes.StationFacility" targetname:"core.Scenes.GameScene"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:10
+  }
+  edge: {sourcename:"core.Scenes.UpgradeHangar" targetname:"core.Scenes.StationFacility"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:10
+  }
+  edge: {sourcename:"core.Ship.Bullet" targetname:"core.GameObjects.GameObject"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:10
+  }
+  edge: {sourcename:"core.Ship.ClusterBullet" targetname:"core.Ship.Bullet"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:10
+  }
+  edge: {sourcename:"core.Ship.ConstantValue" targetname:"core.Ship.Value"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:10
+  }
+  edge: {sourcename:"core.Ship.EnergyStorage" targetname:"core.Ship.ShipFacility"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:10
+  }
+  edge: {sourcename:"core.Ship.ExplosiveBullet" targetname:"core.Ship.Bullet"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:10
+  }
+  edge: {sourcename:"core.Ship.Generator" targetname:"core.Ship.ShipFacility"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:10
+  }
+  edge: {sourcename:"core.Ship.ScrapMagnet" targetname:"core.Ship.ShipFacility"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:10
+  }
+  edge: {sourcename:"core.Ship.ShieldCapacitor" targetname:"core.Ship.ShipFacility"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:10
+  }
+  edge: {sourcename:"core.Ship.ShootingWeapon" targetname:"core.Ship.Weapon"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:10
+  }
+  edge: {sourcename:"core.Ship.SideEngines" targetname:"core.Ship.ShipFacility"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:10
+  }
+  edge: {sourcename:"core.Ship.SpaceFoldStabilizer" targetname:"core.Ship.ShipFacility"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:10
+  }
+  edge: {sourcename:"core.Ship.UpgradableValue" targetname:"core.Ship.Value"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:10
+  }
+  edge: {sourcename:"core.Ship.Weapon" targetname:"core.Ship.ShipFacility"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:10
+  }
+  edge: {sourcename:"core.Utilities.ParamTimer" targetname:"core.Utilities.Timer"  arrowstyle:solid
+  backarrowstyle:none
+  backarrowsize:10
+  }
+  edge: {sourcename:"core.GUI.GUIBar" targetname:"core.GUI.GUIFacilityInfo"  arrowstyle:solid
+  backarrowstyle:none
+  textcolor:green
+  label:"bar_1"
+  }
+  edge: {sourcename:"core.GUI.GUIBar" targetname:"core.GUI.GUIFacilityInfo"  arrowstyle:solid
+  backarrowstyle:none
+  textcolor:green
+  label:"bar_2"
+  }
+  edge: {sourcename:"core.GUI.GUIBar" targetname:"core.GUI.GUIFacilityInfo"  arrowstyle:solid
+  backarrowstyle:none
+  textcolor:green
+  label:"bar_3"
+  }
+  edge: {sourcename:"core.GUI.GUIBar" targetname:"core.Scenes.Flight"  arrowstyle:solid
+  backarrowstyle:none
+  textcolor:green
+  label:"health_bar"
+  }
+  edge: {sourcename:"core.GUI.GUIBar" targetname:"core.Scenes.Flight"  arrowstyle:solid
+  backarrowstyle:none
+  textcolor:green
+  label:"energy_bar"
+  }
+  edge: {sourcename:"core.GUI.GUIBar" targetname:"core.Scenes.Flight"  arrowstyle:solid
+  backarrowstyle:none
+  textcolor:green
+  label:"progress_bar"
+  }
+  edge: {sourcename:"core.GUI.GUIBar" targetname:"core.Scenes.Flight"  arrowstyle:solid
+  backarrowstyle:none
+  textcolor:green
+  label:"mid_gui"
+  }
+  edge: {sourcename:"core.GUI.GUIBar" targetname:"core.Scenes.Station"  arrowstyle:solid
+  backarrowstyle:none
+  textcolor:green
+  label:"gui_left_1"
+  }
+  edge: {sourcename:"core.GUI.GUIBar" targetname:"core.Scenes.Station"  arrowstyle:solid
+  backarrowstyle:none
+  textcolor:green
+  label:"gui_left_2"
+  }
+  edge: {sourcename:"core.GUI.GUIBar" targetname:"core.Scenes.Station"  arrowstyle:solid
+  backarrowstyle:none
+  textcolor:green
+  label:"gui_left_3"
+  }
+  edge: {sourcename:"core.GUI.GUIBar" targetname:"core.Scenes.StationFacility"  arrowstyle:solid
+  backarrowstyle:none
+  textcolor:green
+  label:"gui_left_1"
+  }
+  edge: {sourcename:"core.GUI.GUIBar" targetname:"core.Scenes.StationFacility"  arrowstyle:solid
+  backarrowstyle:none
+  textcolor:green
+  label:"gui_left_2"
+  }
+  edge: {sourcename:"core.GUI.GUIBar" targetname:"core.Scenes.StationFacility"  arrowstyle:solid
+  backarrowstyle:none
+  textcolor:green
+  label:"gui_left_3"
+  }
+  edge: {sourcename:"core.GUI.GUIIdle" targetname:"core.Scenes.Flight"  arrowstyle:solid
+  backarrowstyle:none
+  textcolor:green
+  label:"left_gui"
+  }
+  edge: {sourcename:"core.GUI.GUIIdle" targetname:"core.Scenes.Flight"  arrowstyle:solid
+  backarrowstyle:none
+  textcolor:green
+  label:"right_gui"
+  }
+  edge: {sourcename:"core.GUI.GUIIdle" targetname:"core.Scenes.MainMenu"  arrowstyle:solid
+  backarrowstyle:none
+  textcolor:green
+  label:"logo"
+  }
+  edge: {sourcename:"core.GUI.GUIIdle" targetname:"core.Scenes.Station"  arrowstyle:solid
+  backarrowstyle:none
+  textcolor:green
+  label:"gui_left_4"
+  }
+  edge: {sourcename:"core.GUI.GUIIdle" targetname:"core.Scenes.StationFacility"  arrowstyle:solid
+  backarrowstyle:none
+  textcolor:green
+  label:"gui_left_4"
+  }
+  edge: {sourcename:"core.GUI.GUIMovable" targetname:"core.Scenes.Flight"  arrowstyle:solid
+  backarrowstyle:none
+  textcolor:green
+  label:"left_border"
+  }
+  edge: {sourcename:"core.GUI.GUIMovable" targetname:"core.Scenes.Flight"  arrowstyle:solid
+  backarrowstyle:none
+  textcolor:green
+  label:"right_border"
+  }
+  edge: {sourcename:"core.GUI.GUIMovable" targetname:"core.Scenes.Flight"  arrowstyle:solid
+  backarrowstyle:none
+  textcolor:green
+  label:"background"
+  }
+  edge: {sourcename:"core.GUI.GUIText" targetname:"core.Scenes.ChooseNewGame"  arrowstyle:solid
+  backarrowstyle:none
+  textcolor:green
+  label:"test_regime"
+  }
+  edge: {sourcename:"core.GUI.GUIText" targetname:"core.Scenes.Exchanger"  arrowstyle:solid
+  backarrowstyle:none
+  textcolor:green
+  label:"gui_welcome"
+  }
+  edge: {sourcename:"core.GUI.GUIText" targetname:"core.Scenes.Exchanger"  arrowstyle:solid
+  backarrowstyle:none
+  textcolor:green
+  label:"gui_1"
+  }
+  edge: {sourcename:"core.GUI.GUIText" targetname:"core.Scenes.Exchanger"  arrowstyle:solid
+  backarrowstyle:none
+  textcolor:green
+  label:"gui_2"
+  }
+  edge: {sourcename:"core.GUI.GUIText" targetname:"core.Scenes.Exchanger"  arrowstyle:solid
+  backarrowstyle:none
+  textcolor:green
+  label:"gui_3"
+  }
+  edge: {sourcename:"core.GUI.GUIText" targetname:"core.Scenes.MainMenu"  arrowstyle:solid
+  backarrowstyle:none
+  textcolor:green
+  label:"start_game"
+  }
+  edge: {sourcename:"core.GUI.GUIText" targetname:"core.Scenes.MaintenanceHangar"  arrowstyle:solid
+  backarrowstyle:none
+  textcolor:green
+  label:"gui_welcome"
+  }
+  edge: {sourcename:"core.GUI.GUIText" targetname:"core.Scenes.MaintenanceHangar"  arrowstyle:solid
+  backarrowstyle:none
+  textcolor:green
+  label:"gui_hp"
+  }
+  edge: {sourcename:"core.GUI.GUIText" targetname:"core.Scenes.MaintenanceHangar"  arrowstyle:solid
+  backarrowstyle:none
+  textcolor:green
+  label:"gui_energy"
+  }
+  edge: {sourcename:"core.GUI.GUIText" targetname:"core.Scenes.MaintenanceHangar"  arrowstyle:solid
+  backarrowstyle:none
+  textcolor:green
+  label:"gui_shields"
+  }
+  edge: {sourcename:"core.GUI.GUIText" targetname:"core.Scenes.Station"  arrowstyle:solid
+  backarrowstyle:none
+  textcolor:green
+  label:"gui_welcome"
+  }
+  edge: {sourcename:"core.GUI.GUIText" targetname:"core.Scenes.UpgradeHangar"  arrowstyle:solid
+  backarrowstyle:none
+  textcolor:green
+  label:"gui_welcome"
+  }
+  edge: {sourcename:"core.Scenes.MainMenu" targetname:"core.Control.MenuController"  arrowstyle:solid
+  backarrowstyle:none
+  textcolor:green
+  label:"base_scene"
+  }
+  edge: {sourcename:"core.Scenes.Station" targetname:"core.Control.NodeTimeLine"  arrowstyle:solid
+  backarrowstyle:none
+  textcolor:green
+  label:"cur_station"
+  }
+  edge: {sourcename:"core.Utilities.Controls" targetname:"core.Scenes.Flight"  arrowstyle:solid
+  backarrowstyle:none
+  textcolor:green
+  label:"controls"
+  }
+  edge: {sourcename:"core.Utilities.Timer" targetname:"core.Enemies.RammingEnemy"  arrowstyle:solid
+  backarrowstyle:none
+  textcolor:green
+  label:"destruction_timer"
+  }
+  edge: {sourcename:"core.Utilities.Timer" targetname:"core.Enemies.TimeSpawner"  arrowstyle:solid
+  backarrowstyle:none
+  textcolor:green
+  label:"spawn_timer"
+  }
+  edge: {sourcename:"core.Utilities.Timer" targetname:"core.Explosion.Explosion"  arrowstyle:solid
+  backarrowstyle:none
+  textcolor:green
+  label:"destruction_timer"
+  }
+  edge: {sourcename:"core.Utilities.Timer" targetname:"core.GameObjects.AnimatedSprite"  arrowstyle:solid
+  backarrowstyle:none
+  textcolor:green
+  label:"animation_timer"
+  }
+  edge: {sourcename:"core.Utilities.Timer" targetname:"core.Scenes.Flight"  arrowstyle:solid
+  backarrowstyle:none
+  textcolor:green
+  label:"acc_timer"
+  }
+}

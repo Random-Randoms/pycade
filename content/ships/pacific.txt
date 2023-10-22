@@ -1,0 +1,13 @@
+pacific
+ship_sprite.pacific
+facility.main cannon
+facility.energy batteries
+facility.shield capacitor
+sound.damage
+100
+facilities:
+    facility.nuclear reactor
+    facility.plasma cannon
+    facility.side_engines
+    facility.space_fold_stabiliser
+end

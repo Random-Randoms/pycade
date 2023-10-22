@@ -1,0 +1,4 @@
+shield_capacitor
+shield capacitor
+picture.shield
+value.shield_capacity

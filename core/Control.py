@@ -1,5 +1,4 @@
 import core.Scenes
-from content.content import asteroid, missile
 from core.Enemies import TimeSpawner
 from core.Scenes import MainMenu, Flight, create_station, Loss
 
@@ -86,7 +85,7 @@ class NodeTimeLine(TimeLine):
         super(NodeTimeLine, self).start()
         self.root.set_scene(Flight(self.root.player, self.root.width, self.root.height,
                                    [TimeSpawner(self.content.get_object('enemy.asteroid'), 0.15),
-                                    TimeSpawner(self.content.get_object('enemy.missile'), 3.0)], 360, 1920 - 360, 200, 1, 250))
+                                    TimeSpawner(self.content.get_object('enemy.missile'), 3.0)], 360, 1920 - 360, 200, 1, 50))
 
     def update(self):
         player = self.root.player
@@ -103,8 +102,8 @@ class NodeTimeLine(TimeLine):
 
         elif state == 'ended':
             self.root.set_scene(Flight(self.root.player, self.root.width, self.root.height,
-                                       [TimeSpawner(asteroid, 0.15),
-                                        TimeSpawner(missile, 2.0)],
+                                       [TimeSpawner(self.content.get_object('enemy.asteroid'), 0.15),
+                                        TimeSpawner(self.content.get_object('enemy.missile'), 2.0)],
                                        360, 1920 - 360, 200, 1, 250))
 
         elif state == 'back':

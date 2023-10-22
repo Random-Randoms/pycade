@@ -1,0 +1,10 @@
+upg
+nuc_reactor_prod
+production
+variants:
+    5
+    10
+prices:
+    100
+icons:
+end

@@ -1,0 +1,4 @@
+pacific
+picture.bullet
+1.0
+animation.pacific_flying

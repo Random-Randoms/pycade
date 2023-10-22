@@ -1,0 +1,4 @@
+generator
+nuclear reactor
+picture.nuc_generator
+value.nuc_reactor_prod

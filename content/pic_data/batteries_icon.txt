@@ -1,0 +1,2 @@
+batteries
+content/icons/icon_batteries.png

@@ -1,0 +1,2 @@
+super_bullet
+content/pics/super_bullet.png

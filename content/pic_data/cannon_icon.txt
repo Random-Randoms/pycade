@@ -1,0 +1,2 @@
+cannon_icon
+content/icons/icon_cannon.png

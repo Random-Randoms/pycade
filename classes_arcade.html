@@ -1,0 +1,636 @@
+<html>
+  <body>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+      <div class="mermaid">
+    
+        classDiagram
+          class AnimatedSprite {
+            animation_timer
+            cur_index : int
+            cur_state : list
+            frequency : float
+            states : dict
+            add_state_fnames(name, filenames)
+            add_state_textures(name, textures)
+            set_state(name)
+            upd(delta_time)
+            update_texture()
+          }
+          class Asteroid {
+            destruction_sound
+            move_by_flight : bool
+            collide(_object)
+            on_destroy()
+            on_spawn()
+            player_collide()
+          }
+          class Bullet {
+            center_x
+            center_y
+            collisions : int
+            max_collisions : int
+            speed
+            speed_x : int
+            speed_y
+            type : str
+            add_speed(spd)
+            collide(_object)
+            complete_destroy()
+            copy()
+            on_destroy()
+            set_velocity()
+            upd(delta_time)
+          }
+          class ChooseNewGame {
+            player
+            state : str
+            test_regime
+            draw_gui()
+            on_draw()
+            on_key_press(symbol: int, modifiers: int)
+            set_gui()
+          }
+          class ClusterBullet {
+            shard
+            sound
+            on_destroy()
+          }
+          class Collectable {
+            amount
+            move_by_flight : bool
+            sound
+            type : str
+            on_spawn()
+            player_collide()
+          }
+          class ConstantValue {
+          }
+          class Controls {
+            left
+            right
+            shoot
+          }
+          class Enemy {
+            collidable : bool
+            type
+          }
+          class EnergyStorage {
+            energy : int
+            max_energy
+            upgradables : list
+            add(amount)
+          }
+          class Exchanger {
+            gui_1
+            gui_2
+            gui_3
+            gui_welcome
+            draw_gui()
+            on_draw()
+            on_key_press(symbol: int, modifiers: int)
+            set_gui()
+          }
+          class Explosion {
+            destruction_timer
+            explosion_sound
+            explosion_textures
+            first_upd : bool
+            move_by_flight : bool
+            type : str
+            upd(delta_time)
+          }
+          class ExplosiveBullet {
+            explosion
+            on_destroy()
+          }
+          class Flight {
+            acc_timer
+            acceleration
+            background
+            base_speed
+            bullets : SpriteList
+            controls : NoneType
+            cur_len : int
+            enemies : SpriteList
+            enemy_spawners
+            energy_bar
+            explosions : SpriteList
+            facility_info : list
+            health_bar
+            left_border
+            left_gui
+            left_spawn
+            length
+            mid_gui
+            missiles : SpriteList
+            move : SpriteList
+            objects : SpriteList
+            progress_bar
+            right_border
+            right_gui
+            right_spawn
+            showable_facilities : list
+            speed
+            state : str
+            accelerate()
+            add_object(_object)
+            check_collision_objects()
+            check_collision_player()
+            controls_setup()
+            gui_draw()
+            gui_draw_bg()
+            gui_setup()
+            gui_update(delta_time)
+            move_objects(delta_time)
+            on_draw()
+            on_update(delta_time: float)
+            player_setup()
+            spawners_setup()
+            sprite_setup()
+            update_objects(delta_time)
+            update_spawn_timers(delta_time)
+          }
+          class GUIBar {
+            amount
+            textures : list
+            upd(rel_value)
+          }
+          class GUIFacilityInfo {
+            bar_1
+            bar_2
+            bar_3
+            bottom_color : tuple
+            bottom_text_content : str
+            icon_sprite : Sprite
+            rel_value_1 : int
+            rel_value_2 : int
+            rel_value_3 : int
+            top_text_content : str
+            draw()
+            set_content(info)
+            set_position(x, y)
+            update()
+          }
+          class GUIIdle {
+          }
+          class GUIMovable {
+            center_y
+            inv : bool
+            speed
+            move(delta_time)
+          }
+          class GUIText {
+            font
+            font_size
+            text
+            text_center_x : int, float
+            text_center_y : float, int
+            text_color
+            draw()
+            draw_text()
+            set_position(center_x: float, center_y: float)
+          }
+          class GUITextUpgrade {
+            icon_1 : Sprite
+            icon_2 : Sprite
+            text_center_x
+            draw()
+            draw_icons()
+            set_position(center_x: float, center_y: float)
+          }
+          class GameObject {
+            angle : float
+            angle_speed : int
+            center_x
+            center_y
+            collidable : bool
+            flight : NoneType
+            fname
+            force_x : int
+            force_y : int
+            move_by_flight : bool
+            name
+            speed_x : int
+            speed_y : int
+            type : str
+            add_force(force_x, force_y)
+            collide(_object)
+            complete_destroy()
+            copy()
+            fly_by_angle(_speed)
+            is_collidable()
+            move(x, y)
+            on_destroy()
+            on_spawn()
+            player_collide()
+            rotate_by_speed()
+            set_angle(new_value: float)
+            set_angle_speed(speed)
+            set_flight(flight)
+            set_speed(speed_x, speed_y)
+            upd(delta_time)
+          }
+          class GameScene {
+            player
+            on_key_press(symbol: int, modifiers: int)
+            on_key_release(symbol: int, modifiers: int)
+          }
+          class Generator {
+            energy_prod
+            status : str
+            status_positiveness : int
+            upgradables : list
+            update(delta_time)
+          }
+          class Loss {
+            state : str
+            on_draw()
+            on_key_press(symbol: int, modifiers: int)
+          }
+          class MagneticDisc {
+            center_x
+            center_y
+            force
+            owner : NoneType
+            scale
+            set_force(force)
+            set_owner(owner)
+            upd(delta_time)
+          }
+          class MainMenu {
+            logo
+            menu_sound : NoneType, Sound
+            start_game
+            state : str
+            draw_gui()
+            on_draw()
+            on_key_press(symbol: int, modifiers: int)
+            set_gui()
+          }
+          class MaintenanceHangar {
+            gui_energy
+            gui_hp
+            gui_shields
+            gui_welcome
+            draw_gui()
+            on_draw()
+            on_key_press(symbol: int, modifiers: int)
+            set_gui()
+          }
+          class MenuController {
+            base_scene : NoneType
+            content : NoneType
+            in_game : bool
+            name
+            root : NoneType
+            timeline : NoneType
+            timelines : NoneType
+            set_base_scene()
+            set_content(content)
+            set_root(root)
+            start()
+            update()
+          }
+          class Missile {
+            explosion
+            collide(_object)
+            on_destroy()
+            on_spawn()
+            player_collide()
+          }
+          class NodeTimeLine {
+            cur_station : NoneType
+            game_ended : bool
+            start()
+            update()
+          }
+          class ParamTimer {
+            param
+            trigger_func()
+          }
+          class RammingEnemy {
+            angle
+            angle_speed : int
+            collidable : bool
+            damage
+            destruction_textures : NoneType, list
+            destruction_timer
+            flying_textures : NoneType, list
+            speed
+            is_collidable()
+            on_destroy()
+            set_angle(angle)
+            set_angle_speed(angle_speed)
+            upd(delta_time)
+          }
+          class Scene {
+            delta_time : int
+            fps_counter : int
+            height
+            state : str
+            width
+            clear_state()
+            draw_fps()
+            on_draw()
+            on_key_press(symbol: int, modifiers: int)
+            on_key_release(symbol: int, modifiers: int)
+            on_update(delta_time: float)
+          }
+          class ScrapMagnet {
+            disk
+            force
+            time
+            on_key_press(symbol: int, modifiers: int)
+          }
+          class ShieldCapacitor {
+            cur_shield : int
+            max_shield
+            status : str
+            status_positiveness : int
+            charge(shield)
+            damage(damage)
+            info()
+            set_info()
+          }
+          class Ship {
+            credits : int
+            current_speed : int
+            damage_sound
+            energy_storage
+            facilities
+            flight : NoneType
+            hp
+            main_weapon
+            max_hp
+            name
+            scraps : int
+            shield_capacitor
+            ship_sprite
+            sprites : SpriteList
+            total_force : int
+            add_credits(_credits)
+            add_force(force)
+            add_scraps(scraps)
+            collide(_object)
+            damage(damage)
+            draw()
+            energy()
+            get_center_x()
+            get_center_y()
+            give_energy(energy)
+            max_energy()
+            move(delta_time)
+            on_key_press(symbol: int, modifiers: int)
+            on_key_release(symbol: int, modifiers: int)
+            recharge()
+            recharge_shields()
+            repair()
+            result_force(delta_time)
+            set_flight(flight)
+            set_ship()
+            spawn(x, y)
+            update(delta_time)
+          }
+          class ShipFacility {
+            flight : NoneType
+            icon : str
+            name : str
+            ship : NoneType
+            showable : bool
+            status : str
+            status_positiveness : int
+            upgradables : list
+            info()
+            is_showable()
+            on_key_press(symbol: int, modifiers: int)
+            on_key_release(symbol: int, modifiers: int)
+            set_flight(flight)
+            set_ship(ship)
+            update(delta_time)
+          }
+          class ShootingWeapon {
+            bullet_sprite
+            error_sound
+            key
+            shoot_sound
+            time_since_last_shoot : int
+            info()
+            on_key_press(symbol: int, modifiers: int)
+            reload_time_left()
+            shoot()
+            update(delta_time)
+          }
+          class SideEngines {
+            force
+            left_pressed : bool
+            right_pressed : bool
+            showable : bool
+            on_key_press(symbol: int, modifiers: int)
+            on_key_release(symbol: int, modifiers: int)
+            update(delta_time)
+          }
+          class SmallScrap {
+          }
+          class SpaceFoldStabilizer {
+            coef
+            left
+            left_sprite : NoneType
+            length
+            max_speed
+            right
+            right_sprite : NoneType
+            showable : bool
+            width
+            reflect()
+            set_flight(flight)
+            update(delta_time)
+          }
+          class Station {
+            delta_time : float
+            facilities
+            gui_facility : list
+            gui_left_1
+            gui_left_2
+            gui_left_3
+            gui_left_4
+            gui_welcome
+            menu_sound : NoneType, Sound
+            state : str
+            draw_gui()
+            on_draw()
+            on_key_press(symbol: int, modifiers: int)
+            on_update(delta_time: float)
+            set_gui()
+            set_up_player()
+            update_gui()
+          }
+          class StationFacility {
+            buy_sound : NoneType, Sound
+            error_sound : Sound, NoneType
+            gui_left_1
+            gui_left_2
+            gui_left_3
+            gui_left_4
+            level
+            menu_sound : NoneType, Sound
+            name
+            state : str
+            draw_gui()
+            on_draw()
+            on_key_press(symbol: int, modifiers: int)
+            on_update(delta_time: float)
+            set_gui()
+            update_gui()
+          }
+          class TimeLine {
+            content : NoneType
+            game_ended : bool
+            name
+            root : NoneType
+            set_content(content)
+            set_root(root)
+            start()
+            update()
+          }
+          class TimeSpawner {
+            flight : NoneType
+            frequency
+            left : int
+            object
+            right : int
+            spawn_timer
+            top : int
+            set_flight(flight)
+            spawn_enemy()
+            update(delta_time)
+          }
+          class Timer {
+            current_time : int
+            func
+            is_running : bool
+            iterations : int
+            max_iterations : int
+            trigger_time
+            refresh()
+            start()
+            stop()
+            trigger_func()
+            update(delta_time)
+          }
+          class UpgradableValue {
+            level : int
+            prices
+            variants
+            get_icon()
+            next_value()
+            upgrade()
+            upgrade_cost()
+            upgrade_info()
+          }
+          class UpgradeHangar {
+            gui_options : list
+            gui_options_text : list
+            gui_welcome
+            text_timers : list
+            upgradables : list
+            upgrades : list
+            draw_gui()
+            on_draw()
+            on_key_press(symbol: int, modifiers: int)
+            on_update(delta_time: float)
+            set_gui()
+            set_upgradables()
+            text_reset(index)
+            update_gui()
+          }
+          class Value {
+            facility : NoneType
+            name : str
+            get_facility()
+            is_upgradable()
+            set_facility(facility)
+            value()
+          }
+          class Weapon {
+            energy_cost
+            reload_time
+          }
+          Collectable --|> GameObject
+          SmallScrap --|> Collectable
+          NodeTimeLine --|> TimeLine
+          Asteroid --|> RammingEnemy
+          Enemy --|> GameObject
+          Missile --|> RammingEnemy
+          RammingEnemy --|> Enemy
+          Explosion --|> GameObject
+          GUITextUpgrade --|> GUIText
+          GameObject --|> AnimatedSprite
+          ChooseNewGame --|> Scene
+          Exchanger --|> StationFacility
+          Flight --|> GameScene
+          GameScene --|> Scene
+          Loss --|> GameScene
+          MainMenu --|> Scene
+          MaintenanceHangar --|> StationFacility
+          Station --|> GameScene
+          StationFacility --|> GameScene
+          UpgradeHangar --|> StationFacility
+          Bullet --|> GameObject
+          ClusterBullet --|> Bullet
+          ConstantValue --|> Value
+          EnergyStorage --|> ShipFacility
+          ExplosiveBullet --|> Bullet
+          Generator --|> ShipFacility
+          ScrapMagnet --|> ShipFacility
+          ShieldCapacitor --|> ShipFacility
+          ShootingWeapon --|> Weapon
+          SideEngines --|> ShipFacility
+          SpaceFoldStabilizer --|> ShipFacility
+          UpgradableValue --|> Value
+          Weapon --|> ShipFacility
+          ParamTimer --|> Timer
+          GUIBar --* GUIFacilityInfo : bar_1
+          GUIBar --* GUIFacilityInfo : bar_2
+          GUIBar --* GUIFacilityInfo : bar_3
+          GUIBar --* Flight : health_bar
+          GUIBar --* Flight : energy_bar
+          GUIBar --* Flight : progress_bar
+          GUIBar --* Flight : mid_gui
+          GUIBar --* Station : gui_left_1
+          GUIBar --* Station : gui_left_2
+          GUIBar --* Station : gui_left_3
+          GUIBar --* StationFacility : gui_left_1
+          GUIBar --* StationFacility : gui_left_2
+          GUIBar --* StationFacility : gui_left_3
+          GUIIdle --* Flight : left_gui
+          GUIIdle --* Flight : right_gui
+          GUIIdle --* MainMenu : logo
+          GUIIdle --* Station : gui_left_4
+          GUIIdle --* StationFacility : gui_left_4
+          GUIMovable --* Flight : left_border
+          GUIMovable --* Flight : right_border
+          GUIMovable --* Flight : background
+          GUIText --* ChooseNewGame : test_regime
+          GUIText --* Exchanger : gui_welcome
+          GUIText --* Exchanger : gui_1
+          GUIText --* Exchanger : gui_2
+          GUIText --* Exchanger : gui_3
+          GUIText --* MainMenu : start_game
+          GUIText --* MaintenanceHangar : gui_welcome
+          GUIText --* MaintenanceHangar : gui_hp
+          GUIText --* MaintenanceHangar : gui_energy
+          GUIText --* MaintenanceHangar : gui_shields
+          GUIText --* Station : gui_welcome
+          GUIText --* UpgradeHangar : gui_welcome
+          MainMenu --* MenuController : base_scene
+          Station --* NodeTimeLine : cur_station
+          Controls --* Flight : controls
+          Timer --* RammingEnemy : destruction_timer
+          Timer --* TimeSpawner : spawn_timer
+          Timer --* Explosion : destruction_timer
+          Timer --* AnimatedSprite : animation_timer
+          Timer --* Flight : acc_timer
+  
+       </div>
+  </body>
+</html>

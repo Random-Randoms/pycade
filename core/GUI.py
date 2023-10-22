@@ -80,7 +80,8 @@ class GUITextUpgrade(GUIText):
 
     def draw_icons(self):
         self.icon_1.draw()
-        self.icon_2.draw()
+        #if not self.icon_2.texture == arcade.Texture(""):
+        #    self.icon_2.draw()
 
     def draw(self):
         super(GUITextUpgrade, self).draw()
